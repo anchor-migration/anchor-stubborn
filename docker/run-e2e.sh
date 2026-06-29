@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# End-to-end: demo-spring → scip-java → anchor-stubborn context
+# End-to-end: demo-spring -> scip-java -> anchor-stubborn context
 set -euo pipefail
 
 DEMO_ROOT="${DEMO_ROOT:-/demo}"
@@ -54,6 +54,13 @@ echo "Target: ${target}"
 anchor-stubborn context metadata/symbols.db \
     --target "${target}" \
     --out metadata/order-service.stub.java
+
+echo
+echo "[metrics] compression vs full sources..."
+anchor-stubborn metrics metadata/symbols.db \
+    --target "${target}" \
+    --sources src/main/java \
+    --stub-out metadata/order-service.stub.java
 
 echo
 echo "Done."

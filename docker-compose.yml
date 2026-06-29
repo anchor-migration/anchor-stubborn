@@ -5,12 +5,12 @@ services:
       context: .
       dockerfile: docker/Dockerfile
       args:
-        SCIP_JAVA_VERSION: "0.11.1"
+        SCIP_JAVA_VERSION: "0.12.3"
     image: anchor-stubborn:e2e
 
   e2e:
     image: anchor-stubborn:e2e
-    entrypoint: ["/usr/local/bin/run-demo-e2e"]
+    entrypoint: ["/bin/bash", "/usr/local/bin/run-demo-e2e"]
     working_dir: /demo
     volumes:
       - ./examples/demo-spring:/demo

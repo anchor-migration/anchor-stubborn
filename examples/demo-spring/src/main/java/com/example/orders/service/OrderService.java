@@ -9,7 +9,6 @@ import com.example.orders.repository.OrderRepository;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderService {
@@ -22,7 +21,6 @@ public class OrderService {
         this.paymentGateway = paymentGateway;
     }
 
-    @Transactional
     public OrderResponse createOrder(CreateOrderRequest request) {
         Customer customer = new Customer(UUID.randomUUID(), request.customerEmail(), request.customerName());
         Order order = Order.pending(customer, request.total());
@@ -39,7 +37,6 @@ public class OrderService {
         return orderRepository.findAll().stream().map(this::toResponse).toList();
     }
 
-    @Transactional
     public OrderResponse payOrder(UUID id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
         boolean paid = paymentGateway.charge(order.getCustomer(), order.getTotal());
@@ -51,7 +48,6 @@ public class OrderService {
         return toResponse(order);
     }
 
-    @Transactional
     public OrderResponse cancelOrder(UUID id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
         order.cancel();

@@ -8,7 +8,7 @@ Reproducible toolchain for Anchor-Stubborn without installing JDK, Maven, or sci
 |------|---------|
 | JDK | Eclipse Temurin 21 |
 | Maven | distro package (Noble) |
-| scip-java | `0.11.1` (via Coursier, overridable build arg) |
+| scip-java | `0.12.3` (`scip-java_2.13`, via Coursier) |
 | Python | 3.x + `anchor-stubborn` editable install |
 
 ## Quick start
@@ -62,7 +62,7 @@ docker compose run --rm \
 ## Build arguments
 
 ```bash
-docker compose build --build-arg SCIP_JAVA_VERSION=0.11.1
+docker compose build --build-arg SCIP_JAVA_VERSION=0.12.3
 ```
 
 ## Windows notes

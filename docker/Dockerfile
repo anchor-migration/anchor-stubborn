@@ -13,7 +13,7 @@
 
 FROM eclipse-temurin:21-jdk-noble
 
-ARG SCIP_JAVA_VERSION=0.11.1
+ARG SCIP_JAVA_VERSION=0.12.3
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -34,7 +34,7 @@ RUN apt-get update \
 RUN curl -fL "https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz" \
         | gzip -d > /usr/local/bin/cs \
     && chmod +x /usr/local/bin/cs \
-    && printf '#!/bin/sh\nexec cs launch com.sourcegraph:scip-java:%s -- "$@"\n' \
+    && printf '#!/bin/sh\nexec cs launch com.sourcegraph:scip-java_2.13:%s -- "$@"\n' \
         "${SCIP_JAVA_VERSION}" > /usr/local/bin/scip-java \
     && chmod +x /usr/local/bin/scip-java
 
@@ -47,7 +47,7 @@ COPY proto ./proto
 RUN pip3 install --no-cache-dir --break-system-packages -e ".[dev]"
 
 COPY docker/run-e2e.sh /usr/local/bin/run-demo-e2e
-RUN chmod +x /usr/local/bin/run-demo-e2e
+RUN sed -i 's/\r$//' /usr/local/bin/run-demo-e2e && chmod +x /usr/local/bin/run-demo-e2e
 
 # Default CLI; compose services override entrypoint/command as needed
 ENTRYPOINT ["anchor-stubborn"]
