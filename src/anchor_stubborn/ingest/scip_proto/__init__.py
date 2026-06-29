@@ -1,0 +1,1 @@
+"""Generated SCIP protobuf bindings."""

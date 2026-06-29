@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "anchor-stubborn"
-version = "0.1.0"
+version = "0.2.0"
 description = "Deterministic code context from symbol graphs — not vector search"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -61,4 +61,4 @@ Documentation = "https://github.com/anchor-migration/anchor-stubborn#readme"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["src", "tests"]

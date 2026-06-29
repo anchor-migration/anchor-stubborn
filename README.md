@@ -40,11 +40,15 @@ pip install -e ".[dev]"
 
 ## Quick start
 
-### 1. Index symbols (JSON fixture for now; binary `.scip` in v0.2)
+### 1. Index symbols
 
 ```bash
+# Binary SCIP from scip-java (recommended)
+anchor-stubborn index --scip index.scip --out ./metadata/symbols.db
+
+# Or use the bundled fixture while bootstrapping
 anchor-stubborn index \
-  --scip examples/fixtures/minimal.json \
+  --scip examples/fixtures/minimal.scip \
   --out ./metadata/symbols.db
 ```
 
@@ -76,7 +80,7 @@ anchor-stubborn diff ./metadata/before.db ./metadata/after.db
 | Command | Description |
 |---------|-------------|
 | `init-db` | Create empty SQLite symbol graph |
-| `index` | Ingest SCIP (`.json` fixture today; `.scip` protobuf v0.2) |
+| `index` | Ingest SCIP (`.scip`, `.scip.ndjson`, or `.json` fixture) |
 | `info` | Index run summary |
 | `context` | Prune graph → emit stub text for LLM |
 | `diff` | Symbol set reconcile (missing/extra) |
@@ -99,9 +103,9 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 
 | Version | Focus |
 |---------|-------|
-| **0.1** (now) | SQLite schema, JSON fixture ingest, Java stub weaver, CLI shell |
-| **0.2** | Binary SCIP protobuf ingest, token budget estimator |
-| **0.3** | MCP server, GitHub Action for PR diff |
+| **0.1** | SQLite schema, JSON fixture ingest, Java stub weaver, CLI shell |
+| **0.2** (now) | Binary `.scip` protobuf ingest, `.scip.ndjson`, scip-java compatible |
+| **0.3** | Token budget estimator, MCP server, GitHub Action for PR diff |
 | **0.4** | Anchor-DSL weaver, multi-language stubs |
 
 ## Related projects

@@ -10,8 +10,8 @@ Migrating `AccountControllerBean` (EJB session) → Spring `@Service`. The LLM n
 
 ```bash
 # In the legacy Java repo (with scip-java configured)
-scip-java index --targetroot /path/to/bank
-# produces index.scip
+scip-java index
+# produces index.scip (binary protobuf)
 
 # Index into Stubborn SQLite
 anchor-stubborn index --scip index.scip --out metadata/context.db

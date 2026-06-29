@@ -6,7 +6,10 @@ import hashlib
 import json
 from pathlib import Path
 
+from anchor_stubborn.ingest.extract import parsed_index_to_snapshot
 from anchor_stubborn.ingest.models import EdgeRecord, IndexSnapshot, SymbolRecord
+from anchor_stubborn.ingest.ndjson import parse_ndjson_index
+from anchor_stubborn.ingest.stream import parse_index_bytes
 
 SCIP_MAGIC = b"\x00scip\x00"
 
@@ -27,21 +30,33 @@ def load_scip_index(
     """Load a SCIP index file.
 
     Supports:
-    - JSON fixtures (``.json``) for tests and early prototyping
-    - Binary SCIP protobuf (``.scip``) — requires generated bindings (v0.2)
+    - Binary protobuf ``.scip`` (scip-java, scip-clang, …)
+    - Newline-delimited JSON ``.scip.ndjson``
+    - JSON fixtures ``.json`` for tests and examples
     """
     path = Path(scip_path)
     if not path.exists():
         raise FileNotFoundError(path)
 
+    name = path.name.lower()
     if path.suffix.lower() == ".json":
         return _load_json_fixture(path, project_root=project_root)
 
-    if path.suffix.lower() == ".scip" or path.name.endswith(".scip"):
+    if name.endswith(".scip.ndjson"):
+        parsed = parse_ndjson_index(path.read_bytes())
+        return parsed_index_to_snapshot(
+            parsed,
+            scip_source=str(path),
+            scip_hash=_file_hash(path),
+            project_root=project_root,
+        )
+
+    if path.suffix.lower() == ".scip" or name.endswith(".scip"):
         return _load_scip_protobuf(path, project_root=project_root)
 
     raise ValueError(
-        f"Unsupported SCIP input: {path}. Use .scip (protobuf) or .json (fixture)."
+        f"Unsupported SCIP input: {path}. "
+        "Use .scip, .scip.ndjson, or .json (fixture)."
     )
 
 
@@ -77,14 +92,14 @@ def _load_json_fixture(path: Path, *, project_root: str | None) -> IndexSnapshot
 
 
 def _load_scip_protobuf(path: Path, *, project_root: str | None) -> IndexSnapshot:
-    """Parse binary SCIP protobuf. Full parser lands in v0.2."""
     data = path.read_bytes()
-    if not data.startswith(SCIP_MAGIC):
-        raise ValueError(f"Not a SCIP index file: {path}")
+    if not data:
+        raise ValueError(f"Empty SCIP index file: {path}")
 
-    # Placeholder until scip.proto bindings are vendored
-    raise NotImplementedError(
-        "Binary SCIP ingest is not implemented yet. "
-        "Generate index.scip with scip-java, then convert to JSON fixture, "
-        "or wait for v0.2 protobuf support."
+    parsed = parse_index_bytes(data)
+    return parsed_index_to_snapshot(
+        parsed,
+        scip_source=str(path),
+        scip_hash=_file_hash(path),
+        project_root=project_root,
     )

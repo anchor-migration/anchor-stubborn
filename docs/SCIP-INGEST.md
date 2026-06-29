@@ -1,0 +1,42 @@
+# SCIP ingest (v0.2)
+
+Anchor-Stubborn reads standard SCIP indexes produced by industry indexers.
+
+## Supported formats
+
+| Extension | Producer examples | Notes |
+|-----------|-------------------|-------|
+| `.scip` | scip-java, scip-clang, rust-analyzer | Streaming protobuf (default) |
+| `.scip.ndjson` | scip-java (`TYPED_NDJSON`) | One partial `Index` JSON object per line |
+| `.json` | Anchor-Stubborn fixtures | Test / bootstrap only |
+
+## scip-java workflow
+
+```bash
+# At the root of a Maven/Gradle Java project
+scip-java index
+# → writes index.scip
+
+anchor-stubborn index --scip index.scip --out metadata/symbols.db
+anchor-stubborn context metadata/symbols.db \
+  --target "semanticdb maven com/example/MyService#" \
+  --out my-service.stub.java
+```
+
+## What gets extracted
+
+- **Symbols** — `SymbolInformation` from each document + `external_symbols`
+- **Edges** — `Relationship` fields (`type`, `reference`, `implementation`, `definition`)
+- **Occurrence refs** — non-definition occurrences linked to enclosing definitions
+
+## Protobuf bindings
+
+Schema: [`proto/scip.proto`](../proto/scip.proto) (from [sourcegraph/scip](https://github.com/sourcegraph/scip))
+
+Regenerate Python bindings:
+
+```powershell
+./scripts/regenerate_scip_proto.ps1
+```
+
+Output: `src/anchor_stubborn/ingest/scip_proto/scip_pb2.py`

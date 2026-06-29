@@ -53,4 +53,4 @@ They complement each other. Stubborn does not replace java-ast-ssot for migratio
 
 ## Status
 
-Alpha (v0.1). Binary SCIP ingest and production MCP server are planned for v0.2+.
+Alpha (v0.2). Binary SCIP ingest supports scip-java `index.scip` output. MCP server planned for v0.3.

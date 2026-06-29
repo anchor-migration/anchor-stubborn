@@ -33,7 +33,7 @@ def init_db_cmd(
 
 @app.command("index")
 def index_cmd(
-    scip: Path = typer.Option(..., "--scip", help="SCIP index file (.scip or .json fixture)"),
+    scip: Path = typer.Option(..., "--scip", help="SCIP index (.scip, .scip.ndjson, or .json fixture)"),
     out: Path = typer.Option(..., "--out", "-o", help="Output SQLite file path"),
     project_root: Optional[str] = typer.Option(
         None,
