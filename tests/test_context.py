@@ -28,7 +28,8 @@ def test_prune_and_weave_e2e(tmp_path: Path) -> None:
     assert len(graph.symbols) >= 2
     assert graph.target_stable_id == target
 
-    text = weave_java_stub(graph)
+    result = weave_java_stub(graph)
+    text = result.text
     assert "OrderService" in text
     assert "method bodies" in text.lower() or "stub" in text.lower()
     assert "{" not in text or "/* stub */" in text

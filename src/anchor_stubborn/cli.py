@@ -10,6 +10,7 @@ import typer
 from anchor_stubborn.config import ContextBudget
 from anchor_stubborn.graph.prune import prune_context
 from anchor_stubborn.ingest.scip import load_scip_index
+from anchor_stubborn.metrics import compute_compression
 from anchor_stubborn.reconcile.diff import format_report, reconcile
 from anchor_stubborn.reconcile.entities import SymbolEntity
 from anchor_stubborn.store.writer import IndexWriter, init_db, read_info
@@ -82,6 +83,11 @@ def context_cmd(
     ),
     max_symbols: int = typer.Option(200, "--max-symbols", help="Hard cap on pruned symbols"),
     call_depth: int = typer.Option(2, "--call-depth", help="Call/reference closure depth"),
+    max_tokens: int = typer.Option(
+        12_000,
+        "--max-tokens",
+        help="Hard cap on estimated output tokens (chars/4 heuristic)",
+    ),
     out: Optional[Path] = typer.Option(
         None,
         "--out",
@@ -90,19 +96,59 @@ def context_cmd(
     ),
 ) -> None:
     """Prune the symbol graph and emit type-safe LLM context text."""
-    budget = ContextBudget(call_closure_depth=call_depth, max_symbols=max_symbols)
+    budget = ContextBudget(
+        call_closure_depth=call_depth,
+        max_symbols=max_symbols,
+        max_tokens=max_tokens,
+    )
     graph = prune_context(db_path, target, budget=budget)
 
     if format == "java-stub":
-        text = weave_java_stub(graph)
+        result = weave_java_stub(graph, max_tokens=budget.max_tokens)
+        text = result.text
     else:
         raise typer.BadParameter(f"Unsupported format: {format}")
 
     if out:
         out.write_text(text, encoding="utf-8")
-        typer.echo(f"Wrote {len(graph.symbols)} symbol(s) to {out}")
+        typer.echo(
+            f"Wrote {result.symbol_count} symbol(s) to {out} "
+            f"(~{result.estimated_tokens} tokens, dropped={result.dropped_for_budget})"
+        )
     else:
         typer.echo(text, nl=False)
+
+
+@app.command("metrics")
+def metrics_cmd(
+    db_path: Path = typer.Argument(..., help="SQLite symbol graph file path"),
+    target: str = typer.Option(..., "--target", "-t", help="Target SCIP symbol stable_id"),
+    sources: Path = typer.Option(
+        ...,
+        "--sources",
+        "-s",
+        help="Java source root for baseline size (e.g. src/main/java)",
+    ),
+    max_symbols: int = typer.Option(200, "--max-symbols"),
+    call_depth: int = typer.Option(2, "--call-depth"),
+    max_tokens: int = typer.Option(12_000, "--max-tokens"),
+    stub_out: Optional[Path] = typer.Option(
+        None,
+        "--stub-out",
+        "-o",
+        help="Optional path to write stub text",
+    ),
+) -> None:
+    """Compare pruned stub size against full Java sources (compression KPI)."""
+    budget = ContextBudget(
+        call_closure_depth=call_depth,
+        max_symbols=max_symbols,
+        max_tokens=max_tokens,
+    )
+    report = compute_compression(db_path, target, sources, budget=budget)
+    if stub_out:
+        stub_out.write_text(report.stub.text, encoding="utf-8")
+    typer.echo(report.format_summary())
 
 
 @app.command("diff")

@@ -95,6 +95,7 @@ anchor-stubborn diff ./metadata/before.db ./metadata/after.db
 | `index` | Ingest SCIP (`.scip`, `.scip.ndjson`, or `.json` fixture) |
 | `info` | Index run summary |
 | `context` | Prune graph → emit stub text for LLM |
+| `metrics` | Compression KPI: stub vs full Java sources |
 | `diff` | Symbol set reconcile (missing/extra) |
 
 ## Architecture
@@ -116,9 +117,10 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 | Version | Focus |
 |---------|-------|
 | **0.1** | SQLite schema, JSON fixture ingest, Java stub weaver, CLI shell |
-| **0.2** (now) | Binary `.scip` protobuf ingest, `.scip.ndjson`, scip-java compatible |
-| **0.3** | Token budget enforcement, MCP server, GitHub Action for PR diff |
-| **0.4** | Anchor-DSL weaver, multi-language stubs; [PetClinic scale-up E2E](examples/spring-petclinic/) |
+| **0.2** | Binary `.scip` protobuf ingest, `.scip.ndjson`, scip-java compatible |
+| **0.3** (now) | Token budget enforcement, `metrics` KPI, weaver quality, Docker CI |
+| **0.4** | MCP server, GitHub Action for PR diff |
+| **0.5** | Anchor-DSL weaver; [PetClinic scale-up E2E](examples/spring-petclinic/) |
 
 ## Related projects
 

@@ -26,3 +26,15 @@ jobs:
 
       - name: Run tests
         run: pytest -v
+
+  docker-e2e:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build toolchain image
+        run: docker compose build anchor-stubborn
+
+      - name: Run demo-spring E2E
+        run: docker compose run --rm e2e
