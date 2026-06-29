@@ -129,7 +129,7 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 | [db-metadata](https://github.com/anchor-migration/db-metadata) | Database schema SSOT |
 | [java-ast-ssot](https://github.com/anchor-migration/java-ast-ssot) | Full Java AST SSOT (human + rewrite) |
 | **anchor-stubborn** | **LLM context compiler** (this repo) |
-| [migration-hub](https://github.com/anchor-migration/migration-hub) | Program docs; Stubborn is a horizontal capability |
+| [migration-hub](https://github.com/anchor-migration/migration-hub) | Program docs; [ADR-010](https://github.com/anchor-migration/migration-hub/blob/main/docs/ADR-010-anchor-stubborn-integration.md) integration contract |
 
 See [docs/POSITIONING.md](docs/POSITIONING.md) and [docs/INTEGRATION.md](docs/INTEGRATION.md).
 

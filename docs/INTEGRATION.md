@@ -42,7 +42,7 @@ Stubborn is **not** drawn inside migration-hub Layers 1–4. It sits above them 
 
 ## Future: migration-hub ADR
 
-A short ADR in [migration-hub](https://github.com/anchor-migration/migration-hub) will document this integration contract (planned: ADR-010). This file is the source draft.
+Program integration is documented in [migration-hub ADR-010](https://github.com/anchor-migration/migration-hub/blob/main/docs/ADR-010-anchor-stubborn-integration.md). This file remains repo-local workflow detail.
 
 ## Weak coupling rules
 
