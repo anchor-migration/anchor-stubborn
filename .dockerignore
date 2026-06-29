@@ -1,0 +1,27 @@
+# Git
+.git
+.github
+
+# Python
+.venv
+venv
+__pycache__
+*.py[cod]
+.pytest_cache
+*.egg-info
+dist
+build
+htmlcov
+.coverage
+
+# Generated / local artifacts
+*.db
+index.scip
+examples/**/target
+examples/**/metadata
+!examples/**/metadata/.gitkeep
+examples/**/upstream
+
+# IDE
+.idea
+.vscode

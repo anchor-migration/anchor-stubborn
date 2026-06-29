@@ -27,8 +27,18 @@ Part of the [Anchor](https://github.com/anchor-migration/migration-hub) family. 
 
 ## Requirements
 
-- Python 3.11+
+- Python 3.11+ (or use [Docker](docker/README.md))
 - A SCIP index for your project (e.g. [scip-java](https://github.com/sourcegraph/scip-java))
+
+### Docker quick start
+
+```bash
+docker compose build
+docker compose run --rm e2e    # demo-spring E2E
+docker compose run --rm cli --help
+```
+
+See [docker/README.md](docker/README.md).
 
 ## Installation
 
@@ -39,6 +49,8 @@ pip install -e ".[dev]"
 ```
 
 ## Quick start
+
+**Full E2E with a modern Spring Boot demo:** see [examples/demo-spring](examples/demo-spring/).
 
 ### 1. Index symbols
 
@@ -105,8 +117,8 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 |---------|-------|
 | **0.1** | SQLite schema, JSON fixture ingest, Java stub weaver, CLI shell |
 | **0.2** (now) | Binary `.scip` protobuf ingest, `.scip.ndjson`, scip-java compatible |
-| **0.3** | Token budget estimator, MCP server, GitHub Action for PR diff |
-| **0.4** | Anchor-DSL weaver, multi-language stubs |
+| **0.3** | Token budget enforcement, MCP server, GitHub Action for PR diff |
+| **0.4** | Anchor-DSL weaver, multi-language stubs; [PetClinic scale-up E2E](examples/spring-petclinic/) |
 
 ## Related projects
 

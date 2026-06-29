@@ -1,0 +1,77 @@
+# Docker environment
+
+Reproducible toolchain for Anchor-Stubborn without installing JDK, Maven, or scip-java locally.
+
+## Image contents
+
+| Tool | Version |
+|------|---------|
+| JDK | Eclipse Temurin 21 |
+| Maven | distro package (Noble) |
+| scip-java | `0.11.1` (via Coursier, overridable build arg) |
+| Python | 3.x + `anchor-stubborn` editable install |
+
+## Quick start
+
+From the **repository root**:
+
+```bash
+# Build image
+docker compose build
+
+# Run demo-spring E2E (writes artifacts to examples/demo-spring/metadata/)
+docker compose run --rm e2e
+
+# Inspect outputs on the host
+ls examples/demo-spring/metadata/
+cat examples/demo-spring/metadata/order-service.stub.java
+```
+
+## Services
+
+| Service | Purpose |
+|---------|---------|
+| `e2e` | Runs `docker/run-e2e.sh` on mounted `examples/demo-spring` |
+| `shell` | Interactive bash with full toolchain |
+| `cli` | Run arbitrary `anchor-stubborn` commands |
+
+### Interactive shell
+
+```bash
+docker compose run --rm shell
+# inside container:
+cd /demo && mvn -q -DskipTests package
+scip-java index
+anchor-stubborn index --scip index.scip --out metadata/symbols.db
+```
+
+### One-off CLI
+
+```bash
+docker compose run --rm cli info /demo/metadata/symbols.db
+```
+
+Mount your own project by editing `docker-compose.yml` or:
+
+```bash
+docker compose run --rm \
+  -v /path/to/your/java/project:/demo \
+  e2e
+```
+
+## Build arguments
+
+```bash
+docker compose build --build-arg SCIP_JAVA_VERSION=0.11.1
+```
+
+## Windows notes
+
+- Use Docker Desktop with Linux containers.
+- Generated files appear under `examples\demo-spring\metadata\` via bind mount.
+- PowerShell users can still use `examples/demo-spring/scripts/run-e2e.ps1` on the host.
+
+## Related
+
+- [examples/demo-spring/README.md](../examples/demo-spring/README.md) — demo app and cases
+- [docs/SCIP-INGEST.md](../docs/SCIP-INGEST.md) — SCIP ingest details

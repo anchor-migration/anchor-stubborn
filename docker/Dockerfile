@@ -1,0 +1,54 @@
+# Anchor-Stubborn E2E toolchain image
+#
+# Includes: JDK 21, Maven, scip-java, Python 3, anchor-stubborn CLI
+#
+# Build (from repo root):
+#   docker compose build
+#
+# Run demo-spring E2E:
+#   docker compose run --rm e2e
+#
+# Interactive shell:
+#   docker compose run --rm shell
+
+FROM eclipse-temurin:21-jdk-noble
+
+ARG SCIP_JAVA_VERSION=0.11.1
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        bash \
+        ca-certificates \
+        curl \
+        gzip \
+        maven \
+        python3 \
+        python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Coursier launcher → scip-java on PATH
+RUN curl -fL "https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz" \
+        | gzip -d > /usr/local/bin/cs \
+    && chmod +x /usr/local/bin/cs \
+    && printf '#!/bin/sh\nexec cs launch com.sourcegraph:scip-java:%s -- "$@"\n' \
+        "${SCIP_JAVA_VERSION}" > /usr/local/bin/scip-java \
+    && chmod +x /usr/local/bin/scip-java
+
+WORKDIR /opt/anchor-stubborn
+
+COPY pyproject.toml README.md LICENSE ./
+COPY src ./src
+COPY proto ./proto
+
+RUN pip3 install --no-cache-dir --break-system-packages -e ".[dev]"
+
+COPY docker/run-e2e.sh /usr/local/bin/run-demo-e2e
+RUN chmod +x /usr/local/bin/run-demo-e2e
+
+# Default CLI; compose services override entrypoint/command as needed
+ENTRYPOINT ["anchor-stubborn"]
+CMD ["--help"]

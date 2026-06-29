@@ -1,0 +1,34 @@
+services:
+  # Build once: docker compose build
+  anchor-stubborn:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SCIP_JAVA_VERSION: "0.11.1"
+    image: anchor-stubborn:e2e
+
+  e2e:
+    image: anchor-stubborn:e2e
+    entrypoint: ["/usr/local/bin/run-demo-e2e"]
+    working_dir: /demo
+    volumes:
+      - ./examples/demo-spring:/demo
+
+  shell:
+    image: anchor-stubborn:e2e
+    entrypoint: ["/bin/bash"]
+    stdin_open: true
+    tty: true
+    working_dir: /opt/anchor-stubborn
+    volumes:
+      - .:/opt/anchor-stubborn
+      - ./examples/demo-spring:/demo
+
+  cli:
+    image: anchor-stubborn:e2e
+    entrypoint: ["anchor-stubborn"]
+    working_dir: /workspace
+    volumes:
+      - .:/opt/anchor-stubborn
+      - ./examples/demo-spring:/demo

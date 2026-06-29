@@ -16,6 +16,12 @@ venv/
 # SCIP binaries (generated locally)
 index.scip
 
+# Java examples
+examples/**/target/
+examples/**/metadata/
+!examples/**/metadata/.gitkeep
+examples/**/upstream/
+
 # IDE
 .idea/
 .vscode/
