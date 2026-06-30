@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import re
 import sqlite3
 from collections import deque
 from dataclasses import dataclass
 from pathlib import Path
 
 from anchor_stubborn.config import ContextBudget, DEFAULT_CONTEXT_BUDGET
+
+_SIGNATURE_TYPE_RE = re.compile(r"\b([A-Z][\w]*)\b")
 
 
 @dataclass(frozen=True)
@@ -29,6 +32,90 @@ class PrunedGraph:
 
 def _should_exclude(stable_id: str, patterns: tuple[str, ...]) -> bool:
     return any(pattern in stable_id for pattern in patterns)
+
+
+def _type_member_stable_ids(target_stable_id: str, stable_to_id: dict[str, int]) -> list[str]:
+    """Fields, methods, and constructors owned by a type symbol (stable_id ends with #)."""
+    if not target_stable_id.endswith("#"):
+        return []
+    return [
+        stable_id
+        for stable_id in stable_to_id
+        if stable_id.startswith(target_stable_id) and stable_id != target_stable_id
+    ]
+
+
+def _build_type_name_index(symbols_by_id: dict[int, sqlite3.Row]) -> dict[str, list[int]]:
+    index: dict[str, list[int]] = {}
+    for symbol_id, row in symbols_by_id.items():
+        name = row["display_name"]
+        if not name:
+            continue
+        kind = (row["kind"] or "").lower()
+        if kind in ("class", "interface", "enum", "record") or row["stable_id"].endswith("#"):
+            index.setdefault(name, []).append(symbol_id)
+    return index
+
+
+def _signature_type_ref_ids(
+    symbol_row: sqlite3.Row,
+    type_name_index: dict[str, list[int]],
+) -> list[int]:
+    """Infer type symbol ids referenced in a field/method signature."""
+    signature = (symbol_row["signature"] or "").strip()
+    if not signature:
+        return []
+
+    refs: list[int] = []
+    seen: set[int] = set()
+    for match in _SIGNATURE_TYPE_RE.finditer(signature):
+        for symbol_id in type_name_index.get(match.group(1), []):
+            if symbol_id not in seen:
+                seen.add(symbol_id)
+                refs.append(symbol_id)
+    return refs
+
+
+def _depth_limit_for_edge(
+    edge_kind: str,
+    current_depth: int,
+    budget: ContextBudget,
+) -> bool:
+    """Return True when neighbor at current_depth + 1 is within budget."""
+    next_depth = current_depth + 1
+    if edge_kind in ("type", "implementation"):
+        limit = budget.type_closure_depth
+        if limit is None:
+            return True
+        return next_depth <= limit
+
+    limit = budget.call_closure_depth
+    return next_depth <= limit
+
+
+def _is_type_row(row: sqlite3.Row) -> bool:
+    kind = (row["kind"] or "").lower()
+    if kind in ("class", "interface", "enum", "record"):
+        return True
+    stable_id = row["stable_id"]
+    if not stable_id.endswith("#"):
+        return False
+    member_suffix = stable_id.split("#", 1)[-1]
+    return not member_suffix
+
+
+def _enqueue_symbol(
+    symbol_id: int,
+    depth: int,
+    *,
+    seen: dict[int, int],
+    queue: deque[int],
+    budget: ContextBudget,
+) -> None:
+    if symbol_id in seen or len(seen) >= budget.max_symbols:
+        return
+    seen[symbol_id] = depth
+    queue.append(symbol_id)
 
 
 def prune_context(
@@ -84,12 +171,37 @@ def prune_context(
             )
 
         start_id = stable_to_id[target_stable_id]
-        seen: dict[int, int] = {start_id: 0}
-        queue: deque[int] = deque([start_id])
+        type_name_index = _build_type_name_index(symbols_by_id)
+        seen: dict[int, int] = {}
+        queue: deque[int] = deque()
+
+        _enqueue_symbol(start_id, 0, seen=seen, queue=queue, budget=budget)
+        for member_stable_id in _type_member_stable_ids(target_stable_id, stable_to_id):
+            _enqueue_symbol(
+                stable_to_id[member_stable_id],
+                0,
+                seen=seen,
+                queue=queue,
+                budget=budget,
+            )
 
         while queue and len(seen) < budget.max_symbols:
             current_id = queue.popleft()
             current_depth = seen[current_id]
+            current_row = symbols_by_id[current_id]
+
+            for ref_id in _signature_type_ref_ids(current_row, type_name_index):
+                if current_depth > 0:
+                    continue
+                if ref_id in seen:
+                    continue
+                ref_row = symbols_by_id[ref_id]
+                if _should_exclude(ref_row["stable_id"], budget.exclude_patterns):
+                    continue
+                if not _depth_limit_for_edge("type", current_depth, budget):
+                    continue
+                _enqueue_symbol(ref_id, current_depth + 1, seen=seen, queue=queue, budget=budget)
+
             for neighbor_id, edge_kind in adjacency.get(current_id, []):
                 if neighbor_id in seen:
                     continue
@@ -98,15 +210,19 @@ def prune_context(
                 if _should_exclude(neighbor["stable_id"], budget.exclude_patterns):
                     continue
 
-                limit = budget.call_closure_depth
-                if edge_kind in ("type", "implementation"):
-                    limit = budget.type_closure_depth or budget.max_symbols
-
-                if limit is not None and current_depth + 1 > limit:
+                if not _depth_limit_for_edge(edge_kind, current_depth, budget):
                     continue
 
-                seen[neighbor_id] = current_depth + 1
-                queue.append(neighbor_id)
+                if current_depth >= 1 and not _is_type_row(neighbor):
+                    continue
+
+                _enqueue_symbol(
+                    neighbor_id,
+                    current_depth + 1,
+                    seen=seen,
+                    queue=queue,
+                    budget=budget,
+                )
 
         pruned_symbols: list[PrunedSymbol] = []
         for symbol_id, depth in sorted(seen.items(), key=lambda item: item[1]):

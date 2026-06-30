@@ -130,8 +130,9 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 | **0.1** | SQLite schema, JSON fixture ingest, Java stub weaver, CLI shell |
 | **0.2** | Binary `.scip` protobuf ingest, `.scip.ndjson`, scip-java compatible |
 | **0.3** | Token budget enforcement, `metrics` KPI, weaver quality, Docker CI |
-| **0.4** (now) | MCP server (`get_context`, `list_symbols`, `metrics`) |
-| **0.5** | GitHub Action for PR diff; Anchor-DSL weaver; [PetClinic scale-up E2E](examples/spring-petclinic/) |
+| **0.4** | MCP server (`get_context`, `list_symbols`, `metrics`) |
+| **0.5** (now) | Type-neighbor pruning, PR symbol-diff Action, context guard |
+| **0.6** | Anchor-DSL weaver; [PetClinic scale-up E2E](examples/spring-petclinic/) |
 
 ## Related projects
 

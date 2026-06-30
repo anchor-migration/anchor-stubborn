@@ -20,6 +20,7 @@ index.scip
 examples/**/target/
 examples/**/metadata/
 !examples/**/metadata/.gitkeep
+!examples/**/metadata/expected-context-types.txt
 examples/**/upstream/
 
 # IDE

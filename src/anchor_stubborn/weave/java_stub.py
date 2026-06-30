@@ -95,17 +95,13 @@ def _trim_for_token_budget(
 
 
 def _select_symbols(symbols: list[PrunedSymbol], target_stable_id: str) -> list[PrunedSymbol]:
-    type_ids = {
-        s.stable_id
-        for s in symbols
-        if _kind_bucket(s) == "type" or s.stable_id.endswith("#")
-    }
-
     selected: list[PrunedSymbol] = []
     for symbol in symbols:
         if _is_annotation_only(symbol):
             continue
-        if _is_constructor(symbol) and _enclosing_type_id(symbol.stable_id) in type_ids:
+        if _kind_bucket(symbol) != "type":
+            continue
+        if _is_enum_constant(symbol):
             continue
         selected.append(symbol)
 
@@ -116,6 +112,13 @@ def _select_symbols(symbols: list[PrunedSymbol], target_stable_id: str) -> list[
                 break
 
     return selected
+
+
+def _is_enum_constant(symbol: PrunedSymbol) -> bool:
+    if not symbol.stable_id.endswith("#"):
+        return False
+    suffix = symbol.stable_id.split("#", 1)[-1]
+    return bool(suffix)
 
 
 def _kind_bucket(symbol: PrunedSymbol) -> str:
@@ -147,6 +150,11 @@ def _is_constructor(symbol: PrunedSymbol) -> bool:
     if (symbol.kind or "").lower() == "constructor":
         return True
     return "<init>" in symbol.stable_id or symbol.display_name == "<init>"
+
+
+def _is_method(symbol: PrunedSymbol) -> bool:
+    kind = (symbol.kind or "").lower()
+    return kind in _METHOD_KINDS or "#" in symbol.stable_id and "(" in symbol.stable_id.split("#", 1)[-1]
 
 
 def _is_annotation_only(symbol: PrunedSymbol) -> bool:

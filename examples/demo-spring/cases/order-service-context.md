@@ -37,16 +37,18 @@ Measured after `docker compose run --rm e2e` (Java 21, Spring Boot 3.3, scip-jav
 | `source_files` | 14 |
 | `source_bytes` | 10,020 |
 | `source_tokens_est` | 2,423 |
-| `stub_symbols` | 5 |
-| `stub_tokens_est` | 330 |
-| `compression_ratio` | **86.38%** |
-| `token_savings` | **86.4%** |
+| `stub_symbols` | 11 |
+| `stub_tokens_est` | 450 |
+| `compression_ratio` | **81.43%** |
+| `token_savings` | **81.4%** |
 
-Passes the ≥85% compression target.
+Passes the ≥75% compression target with expanded type-neighbor coverage (PaymentGateway, DTOs).
 
 ## Notes
 
-- Default `--call-depth 2` reaches repository and payment types.
+- Pruning seeds **type members** (fields/methods) from the target class, then resolves **signature type refs** (e.g. `PaymentGateway` on `paymentGateway` field).
+- Graph expansion after depth 0 keeps **type symbols only** to avoid DTO field noise.
+- Default `--call-depth 2` reaches repository, payment, and DTO types.
 - Default `--max-tokens 12000` enforces output budget (chars/4 heuristic).
 - Hub types under `java.lang.*` are excluded by default (`ContextBudget.exclude_patterns`).
 - Constructors are folded into type declarations (not emitted as separate lines).
