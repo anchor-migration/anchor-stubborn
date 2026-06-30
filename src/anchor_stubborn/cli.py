@@ -195,3 +195,15 @@ def diff_cmd(
     typer.echo(format_report(report))
     if not report.ok:
         raise typer.Exit(code=1)
+
+
+@app.command("mcp")
+def mcp_cmd() -> None:
+    """Run the MCP server (stdio) for Cursor and other MCP clients."""
+    try:
+        from anchor_stubborn.mcp_server import main as run_mcp
+    except ImportError as exc:
+        raise typer.BadParameter(
+            "MCP support requires: pip install 'anchor-stubborn[mcp]'"
+        ) from exc
+    run_mcp()

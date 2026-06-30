@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "anchor-stubborn": {
+      "command": "python",
+      "args": ["-m", "anchor_stubborn.mcp_server"],
+      "env": {
+        "ANCHOR_STUBBORN_DB": "${workspaceFolder}/examples/demo-spring/metadata/symbols.db"
+      }
+    }
+  }
+}

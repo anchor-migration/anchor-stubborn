@@ -83,6 +83,29 @@ anchor-stubborn context metadata/symbols.db \
 
 Use the E2E script to resolve `OrderService` automatically from the SQLite index.
 
+## Cursor MCP (v0.4)
+
+With the **anchor-stubborn repo root** open as the Cursor workspace:
+
+1. Install: `pip install -e ".[mcp]"` from repo root
+2. Ensure `metadata/symbols.db` exists (`./scripts/run-e2e.ps1` or index step above)
+3. Project config is already at [`.cursor/mcp.json`](../../.cursor/mcp.json) — enables server `anchor-stubborn`
+4. **Cursor Settings → MCP** → enable `anchor-stubborn` (green) → Reload if needed
+
+Smoke-test without Cursor:
+
+```powershell
+./scripts/mcp-smoke.ps1
+```
+
+Agent workflow:
+
+1. `list_symbols` with `query: "OrderService"`
+2. `get_context` with the returned `stable_id`
+3. `metrics` with `sources: examples/demo-spring/src/main/java`
+
+See [docs/MCP.md](../../docs/MCP.md).
+
 ## Run the app (optional)
 
 ```bash

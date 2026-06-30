@@ -87,6 +87,16 @@ anchor-stubborn diff ./metadata/before.db ./metadata/after.db
 # exit 1 if symbols are missing
 ```
 
+### 5. MCP server (Cursor / agents)
+
+```bash
+pip install -e ".[mcp]"
+export ANCHOR_STUBBORN_DB=./metadata/symbols.db
+anchor-stubborn mcp
+```
+
+Tools: `get_context`, `list_symbols`, `metrics`. See [docs/MCP.md](docs/MCP.md) for Cursor configuration.
+
 ## CLI
 
 | Command | Description |
@@ -96,6 +106,7 @@ anchor-stubborn diff ./metadata/before.db ./metadata/after.db
 | `info` | Index run summary |
 | `context` | Prune graph → emit stub text for LLM |
 | `metrics` | Compression KPI: stub vs full Java sources |
+| `mcp` | Run MCP server (stdio) for agents |
 | `diff` | Symbol set reconcile (missing/extra) |
 
 ## Architecture
@@ -118,9 +129,9 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 |---------|-------|
 | **0.1** | SQLite schema, JSON fixture ingest, Java stub weaver, CLI shell |
 | **0.2** | Binary `.scip` protobuf ingest, `.scip.ndjson`, scip-java compatible |
-| **0.3** (now) | Token budget enforcement, `metrics` KPI, weaver quality, Docker CI |
-| **0.4** | MCP server, GitHub Action for PR diff |
-| **0.5** | Anchor-DSL weaver; [PetClinic scale-up E2E](examples/spring-petclinic/) |
+| **0.3** | Token budget enforcement, `metrics` KPI, weaver quality, Docker CI |
+| **0.4** (now) | MCP server (`get_context`, `list_symbols`, `metrics`) |
+| **0.5** | GitHub Action for PR diff; Anchor-DSL weaver; [PetClinic scale-up E2E](examples/spring-petclinic/) |
 
 ## Related projects
 
@@ -138,6 +149,13 @@ See [docs/POSITIONING.md](docs/POSITIONING.md) and [docs/INTEGRATION.md](docs/IN
 ```bash
 pip install -e ".[dev]"
 pytest -v
+```
+
+MCP server:
+
+```bash
+pip install -e ".[mcp]"
+anchor-stubborn mcp
 ```
 
 ## License

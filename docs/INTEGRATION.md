@@ -19,6 +19,8 @@ anchor-stubborn context metadata/code-context.db \
 
 Feed `/tmp/account-controller.stub.java` to the LLM instead of raw sources.
 
+Or use the MCP server (`anchor-stubborn mcp`) so agents call `get_context` directly — see [MCP.md](MCP.md).
+
 ## When migration does NOT use Stubborn
 
 - Full AST export for Explorer → **java-ast-ssot**
