@@ -6,7 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from anchor_stubborn.ingest.extract import parsed_index_to_snapshot
+from anchor_stubborn.ingest.extract import enrich_snapshot_edges, parsed_index_to_snapshot
 from anchor_stubborn.ingest.models import EdgeRecord, IndexSnapshot, SymbolRecord
 from anchor_stubborn.ingest.ndjson import parse_ndjson_index
 from anchor_stubborn.ingest.stream import parse_index_bytes
@@ -81,6 +81,7 @@ def _load_json_fixture(path: Path, *, project_root: str | None) -> IndexSnapshot
         )
         for item in payload.get("edges", [])
     ]
+    edges = enrich_snapshot_edges(symbols, edges)
     return IndexSnapshot(
         scip_source=str(path),
         symbols=symbols,

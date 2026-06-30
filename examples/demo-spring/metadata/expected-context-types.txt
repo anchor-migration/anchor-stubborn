@@ -6,3 +6,4 @@ CreateOrderRequest
 OrderResponse
 Order
 OrderController
+OrderNotFoundException

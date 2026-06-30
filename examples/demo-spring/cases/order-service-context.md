@@ -37,12 +37,12 @@ Measured after `docker compose run --rm e2e` (Java 21, Spring Boot 3.3, scip-jav
 | `source_files` | 14 |
 | `source_bytes` | 10,020 |
 | `source_tokens_est` | 2,423 |
-| `stub_symbols` | 11 |
-| `stub_tokens_est` | 450 |
-| `compression_ratio` | **81.43%** |
-| `token_savings` | **81.4%** |
+| `stub_symbols` | 12 |
+| `stub_tokens_est` | 463 |
+| `compression_ratio` | **~80.9%** |
+| `token_savings` | **~80.9%** |
 
-Passes the ≥75% compression target with expanded type-neighbor coverage (PaymentGateway, DTOs).
+Passes the ≥75% compression target with expanded type-neighbor coverage (PaymentGateway, DTOs, `OrderNotFoundException`).
 
 ## Notes
 
