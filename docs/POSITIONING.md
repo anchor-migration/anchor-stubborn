@@ -20,7 +20,7 @@ A **code context compiler**:
 | `java-stub` | v0.1 | Java-like declarations; best for codegen |
 | `anchor-dsl` | v0.7 | Compact type/edge graph; best for token savings |
 
-Target-type **method signatures** in both formats since **v0.9** (`0.9.0a1` pre-beta). See [ANCHOR-DSL.md](ANCHOR-DSL.md), [ANCHOR-DSL-GUIDE.md](ANCHOR-DSL-GUIDE.md).
+Target-type **method signatures** in both formats since v0.9. See [ANCHOR-DSL.md](ANCHOR-DSL.md), [ANCHOR-DSL-GUIDE.md](ANCHOR-DSL-GUIDE.md).
 
 ## What it is not
 
@@ -63,4 +63,4 @@ They complement each other. Stubborn does not replace java-ast-ssot for migratio
 
 ## Status
 
-**Pre-beta `0.9.0a1` (Java-first)** — formal beta at **`0.9.0b1`** ([BETA.md](BETA.md)).
+**Beta `0.9.0b1` (Java-first)** — see [BETA.md](BETA.md).

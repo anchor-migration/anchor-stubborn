@@ -2,7 +2,7 @@
 
 **Deterministic code context from symbol graphs — not vector search.**
 
-> **Status: Pre-beta (Java-first)** — release **`0.9.0a1`** · formal beta → `0.9.0b1` ([BETA.md](docs/BETA.md))
+> **Status: Beta (Java-first)** — release **`0.9.0b1`** · [BETA.md](docs/BETA.md)
 
 Anchor-Stubborn compiles a live codebase into **type-safe, privacy-preserving stub text** for LLMs and agents. It uses [SCIP](https://github.com/sourcegraph/scip) symbol indexes and dependency graphs instead of vector chunking, so context is **stubborn**: exact, reproducible, and stripped of method bodies.
 
@@ -146,8 +146,9 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 | **0.6** | [spring-petclinic](examples/spring-petclinic/) scale-up E2E (~90% savings) |
 | **0.7** | [Anchor-DSL](docs/ANCHOR-DSL.md) weaver (`--format anchor-dsl`) |
 | **0.8** | Java-first beta track — [BETA.md](docs/BETA.md), demo-spring cases |
-| **0.9** (pre-beta, **now**) | Method signatures on target types; [ANCHOR-DSL-GUIDE](docs/ANCHOR-DSL-GUIDE.md) · ship **`0.9.0a1`** |
-| **next** | Tag **`0.9.0b1`** when beta checklist complete |
+| **0.9** | Method signatures, [ANCHOR-DSL-GUIDE](docs/ANCHOR-DSL-GUIDE.md) |
+| **0.9.0b1** (now) | **Java-first Beta** — classifier + tag |
+| **1.0** | Multi-language E2E, stable API |
 
 ## Documentation
 

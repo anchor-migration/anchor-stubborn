@@ -1,6 +1,6 @@
 # Documentation index
 
-**Package version:** `0.9.0a1` (pre-beta) — see [BETA.md](BETA.md) for `0.9.0b1` tag criteria.
+**Package version:** `0.9.0b1` (Beta)
 
 | Doc | Audience | Contents |
 |-----|----------|----------|
