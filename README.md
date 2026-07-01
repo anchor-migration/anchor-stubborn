@@ -77,7 +77,15 @@ anchor-stubborn info ./metadata/symbols.db
 anchor-stubborn context ./metadata/symbols.db \
   --target "semanticdb maven com/example/OrderService#process()." \
   --out ./context/order-service.stub.java
+
+# Compact cross-language format (~fewer tokens):
+anchor-stubborn context ./metadata/symbols.db \
+  --target "semanticdb maven com/example/OrderService#process()." \
+  --format anchor-dsl \
+  --out ./context/order-service.anchor-dsl
 ```
+
+See [docs/ANCHOR-DSL.md](docs/ANCHOR-DSL.md) for the compact cross-language format.
 
 Or use the short CLI alias: `astub`.
 
@@ -133,8 +141,8 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 | **0.3** | Token budget enforcement, `metrics` KPI, weaver quality, Docker CI |
 | **0.4** | MCP server (`get_context`, `list_symbols`, `metrics`) |
 | **0.5** | Type-neighbor pruning, PR symbol-diff Action, context guard |
-| **0.6** (now) | [spring-petclinic](examples/spring-petclinic/) scale-up E2E (~90% savings) |
-| **0.7** | Anchor-DSL weaver |
+| **0.6** | [spring-petclinic](examples/spring-petclinic/) scale-up E2E (~90% savings) |
+| **0.7** (now) | [Anchor-DSL](docs/ANCHOR-DSL.md) weaver (`--format anchor-dsl`) |
 
 ## Related projects
 

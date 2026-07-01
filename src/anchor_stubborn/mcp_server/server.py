@@ -10,6 +10,7 @@ from anchor_stubborn.api import (
     get_metrics as build_metrics,
     list_index_symbols,
 )
+from anchor_stubborn.weave.anchor_dsl_llm import llm_guide_text
 
 try:
     from mcp.server.fastmcp import FastMCP
@@ -22,8 +23,9 @@ mcp = FastMCP(
     "anchor-stubborn",
     instructions=(
         "Deterministic code context from SCIP symbol graphs. "
-        "Use get_context for pruned Java stub text, list_symbols to find stable_id targets, "
-        "and metrics for compression KPIs. Set ANCHOR_STUBBORN_DB or pass db_path per call."
+        "Use get_context for pruned stub text (java-stub or anchor-dsl), list_symbols to find stable_id targets, "
+        "and metrics for compression KPIs. Set ANCHOR_STUBBORN_DB or pass db_path per call. "
+        f"When format is anchor-dsl: {llm_guide_text()}"
     ),
 )
 
@@ -37,7 +39,11 @@ def get_context(
     call_depth: int = 2,
     max_tokens: int = 12_000,
 ) -> dict[str, Any]:
-    """Return pruned, privacy-safe stub context for an LLM target symbol."""
+    """Return pruned, privacy-safe stub context for an LLM target symbol.
+
+    format=anchor-dsl: compact graph text; each block includes a 3-line # Guide header.
+    See docs/ANCHOR-DSL-LLM.txt for a system-prompt snippet.
+    """
     result = build_context(
         target,
         db_path=db_path,

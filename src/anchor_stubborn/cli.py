@@ -14,7 +14,7 @@ from anchor_stubborn.metrics import compute_compression
 from anchor_stubborn.reconcile.diff import format_report, reconcile
 from anchor_stubborn.reconcile.entities import SymbolEntity
 from anchor_stubborn.store.writer import IndexWriter, init_db, read_info
-from anchor_stubborn.weave.java_stub import weave_java_stub
+from anchor_stubborn.weave.dispatch import weave_context
 
 app = typer.Typer(
     name="anchor-stubborn",
@@ -79,7 +79,7 @@ def context_cmd(
         "java-stub",
         "--format",
         "-f",
-        help="Output format: java-stub",
+        help="Output format: java-stub | anchor-dsl",
     ),
     max_symbols: int = typer.Option(200, "--max-symbols", help="Hard cap on pruned symbols"),
     call_depth: int = typer.Option(2, "--call-depth", help="Call/reference closure depth"),
@@ -103,11 +103,11 @@ def context_cmd(
     )
     graph = prune_context(db_path, target, budget=budget)
 
-    if format == "java-stub":
-        result = weave_java_stub(graph, max_tokens=budget.max_tokens)
-        text = result.text
-    else:
-        raise typer.BadParameter(f"Unsupported format: {format}")
+    try:
+        result = weave_context(graph, format=format, max_tokens=budget.max_tokens)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    text = result.text
 
     if out:
         out.write_text(text, encoding="utf-8")

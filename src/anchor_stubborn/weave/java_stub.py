@@ -2,30 +2,32 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from anchor_stubborn.graph.prune import PrunedGraph, PrunedSymbol
 from anchor_stubborn.tokens import estimate_tokens
+from anchor_stubborn.weave._shared import (
+    kind_bucket,
+    select_type_symbols,
+    short_name,
+    sort_key,
+    trim_for_token_budget,
+)
+from anchor_stubborn.weave.types import WeaveResult
 
-_TYPE_KINDS = frozenset({"class", "interface", "enum", "record"})
 _METHOD_KINDS = frozenset({"method", "constructor", "abstractmethod", "staticmethod"})
-
-
-@dataclass(frozen=True)
-class WeaveResult:
-    text: str
-    symbol_count: int
-    estimated_tokens: int
-    dropped_for_budget: int = 0
 
 
 def weave_java_stub(graph: PrunedGraph, *, max_tokens: int | None = None) -> WeaveResult:
     """Render pruned symbols as compact Java-like declarations (no method bodies)."""
-    selected = _select_symbols(graph.symbols, graph.target_stable_id)
+    selected = select_type_symbols(graph.symbols, graph.target_stable_id)
     dropped = 0
 
     if max_tokens is not None:
-        selected, dropped = _trim_for_token_budget(selected, graph, max_tokens)
+        selected, dropped = trim_for_token_budget(
+            selected,
+            graph,
+            max_tokens,
+            weave_java_stub,
+        )
 
     lines: list[str] = [
         "// Anchor-Stubborn context — declarations only, no method bodies",
@@ -33,16 +35,16 @@ def weave_java_stub(graph: PrunedGraph, *, max_tokens: int | None = None) -> Wea
         "",
     ]
 
-    type_symbols = [s for s in selected if _kind_bucket(s) == "type"]
-    other_symbols = [s for s in selected if _kind_bucket(s) != "type"]
+    type_symbols = [s for s in selected if kind_bucket(s) == "type"]
+    other_symbols = [s for s in selected if kind_bucket(s) != "type"]
 
-    for symbol in sorted(type_symbols, key=_sort_key):
+    for symbol in sorted(type_symbols, key=sort_key):
         header = _format_type_declaration(symbol)
         if header:
             lines.append(header)
             lines.append("")
 
-    for symbol in sorted(other_symbols, key=_sort_key):
+    for symbol in sorted(other_symbols, key=sort_key):
         header = _format_member_declaration(symbol)
         if header:
             lines.append(header)
@@ -66,84 +68,8 @@ def weave_java_stub(graph: PrunedGraph, *, max_tokens: int | None = None) -> Wea
     )
 
 
-def _trim_for_token_budget(
-    symbols: list[PrunedSymbol],
-    graph: PrunedGraph,
-    max_tokens: int,
-) -> tuple[list[PrunedSymbol], int]:
-    selected = list(symbols)
-    dropped = 0
-    target_id = graph.target_stable_id
-
-    while selected:
-        preview = weave_java_stub(
-            PrunedGraph(target_stable_id=graph.target_stable_id, symbols=selected, edges=graph.edges),
-            max_tokens=None,
-        )
-        if preview.estimated_tokens <= max_tokens:
-            return selected, dropped
-
-        removable = [s for s in selected if s.stable_id != target_id]
-        if not removable:
-            return selected, dropped
-
-        removable.sort(key=lambda s: (-s.depth, s.stable_id))
-        selected.remove(removable[0])
-        dropped += 1
-
-    return selected, dropped
-
-
-def _select_symbols(symbols: list[PrunedSymbol], target_stable_id: str) -> list[PrunedSymbol]:
-    selected: list[PrunedSymbol] = []
-    for symbol in symbols:
-        if _is_annotation_only(symbol):
-            continue
-        if _kind_bucket(symbol) != "type":
-            continue
-        if _is_enum_constant(symbol):
-            continue
-        selected.append(symbol)
-
-    if not any(s.stable_id == target_stable_id for s in selected):
-        for symbol in symbols:
-            if symbol.stable_id == target_stable_id:
-                selected.insert(0, symbol)
-                break
-
-    return selected
-
-
-def _is_enum_constant(symbol: PrunedSymbol) -> bool:
-    if not symbol.stable_id.endswith("#"):
-        return False
-    suffix = symbol.stable_id.split("#", 1)[-1]
-    return bool(suffix)
-
-
-def _kind_bucket(symbol: PrunedSymbol) -> str:
-    kind = (symbol.kind or "").lower()
-    if kind in _TYPE_KINDS or symbol.stable_id.endswith("#"):
-        return "type"
-    return "member"
-
-
-def _sort_key(symbol: PrunedSymbol) -> tuple[int, str]:
-    return (symbol.depth, symbol.stable_id)
-
-
 def _short_name(stable_id: str) -> str:
-    if " " in stable_id:
-        return stable_id.split(" ", 1)[1]
-    if "#" in stable_id:
-        return stable_id.split("#", 1)[-1] or stable_id
-    return stable_id
-
-
-def _enclosing_type_id(stable_id: str) -> str:
-    if "#" not in stable_id:
-        return stable_id
-    return stable_id.split("#", 1)[0] + "#"
+    return short_name(stable_id)
 
 
 def _is_constructor(symbol: PrunedSymbol) -> bool:

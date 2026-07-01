@@ -11,7 +11,7 @@ from anchor_stubborn.graph.prune import prune_context
 from anchor_stubborn.metrics import compute_compression
 from anchor_stubborn.store.reader import SymbolRecord, list_symbols, resolve_db_path
 from anchor_stubborn.store.writer import IndexInfo, read_info
-from anchor_stubborn.weave.java_stub import weave_java_stub
+from anchor_stubborn.weave.dispatch import weave_context
 
 
 @dataclass(frozen=True)
@@ -54,11 +54,7 @@ def get_context(
         max_tokens=max_tokens,
     )
     graph = prune_context(path, target, budget=budget)
-
-    if format != "java-stub":
-        raise ValueError(f"Unsupported format: {format}")
-
-    result = weave_java_stub(graph, max_tokens=budget.max_tokens)
+    result = weave_context(graph, format=format, max_tokens=budget.max_tokens)
     return ContextResult(
         target_stable_id=target,
         format=format,

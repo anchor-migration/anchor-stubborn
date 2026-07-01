@@ -86,7 +86,7 @@ If the CLI is not on `PATH`, use the module entry:
 | `max_tokens` | 12000 | Output token budget (chars/4) |
 | `max_symbols` | 200 | Graph prune cap |
 | `call_depth` | 2 | Reference closure depth |
-| `format` | `java-stub` | Only `java-stub` today |
+| `format` | `java-stub` | `java-stub` or `anchor-dsl` ([grammar](ANCHOR-DSL.md), [LLM prompt snippet](ANCHOR-DSL-LLM.txt)) |
 
 ## Related
 
