@@ -88,3 +88,41 @@ def list_symbols(
         ]
     finally:
         conn.close()
+
+
+def resolve_stable_id(
+    db_path: str | Path,
+    *,
+    display_name: str,
+    prefer_type: bool = True,
+    index_run_id: int | None = None,
+) -> str:
+    """Resolve a symbol stable_id by display name (prefers type-level symbols)."""
+    conn = sqlite3.connect(db_path)
+    try:
+        run_id = _latest_index_run_id(conn, index_run_id)
+        rows = conn.execute(
+            """
+            SELECT stable_id, kind
+            FROM scip_symbol
+            WHERE index_run_id = ?
+              AND (display_name = ? OR stable_id LIKE ?)
+            ORDER BY length(stable_id)
+            """,
+            (run_id, display_name, f"%{display_name}#%"),
+        ).fetchall()
+        if not rows:
+            raise ValueError(f"Symbol not found: {display_name!r}")
+
+        if prefer_type:
+            for stable_id, kind in rows:
+                if stable_id.endswith("#") or (kind or "").lower() in (
+                    "class",
+                    "interface",
+                    "enum",
+                    "record",
+                ):
+                    return stable_id
+        return rows[0][0]
+    finally:
+        conn.close()

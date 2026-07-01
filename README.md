@@ -35,6 +35,7 @@ Part of the [Anchor](https://github.com/anchor-migration/migration-hub) family. 
 ```bash
 docker compose build
 docker compose run --rm e2e    # demo-spring E2E
+docker compose run --rm petclinic-e2e  # spring-petclinic scale-up
 docker compose run --rm cli --help
 ```
 
@@ -131,8 +132,9 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 | **0.2** | Binary `.scip` protobuf ingest, `.scip.ndjson`, scip-java compatible |
 | **0.3** | Token budget enforcement, `metrics` KPI, weaver quality, Docker CI |
 | **0.4** | MCP server (`get_context`, `list_symbols`, `metrics`) |
-| **0.5** (now) | Type-neighbor pruning, PR symbol-diff Action, context guard |
-| **0.6** | Anchor-DSL weaver; [PetClinic scale-up E2E](examples/spring-petclinic/) |
+| **0.5** | Type-neighbor pruning, PR symbol-diff Action, context guard |
+| **0.6** (now) | [spring-petclinic](examples/spring-petclinic/) scale-up E2E (~90% savings) |
+| **0.7** | Anchor-DSL weaver |
 
 ## Related projects
 

@@ -1,54 +1,57 @@
-# Spring PetClinic — planned scale-up E2E
+# Spring PetClinic — scale-up E2E
 
-**Status:** placeholder — not yet automated in this repo.
-
-## Why PetClinic later
+Official [spring-petclinic](https://github.com/spring-projects/spring-petclinic) indexed via **scip-java** + Anchor-Stubborn. Validates compression and neighbor coverage on a ~30-file Spring Boot app (vs ~14 in demo-spring).
 
 | | demo-spring | spring-petclinic |
 |---|-------------|------------------|
-| Size | ~14 Java files | ~80+ files |
-| Index time | seconds | minutes |
-| Purpose | Fast regression, docs, CI-friendly | Realistic multi-package Spring app |
-| Maintenance | In-repo | External clone |
+| Java files | ~14 | ~30 (`src/main/java`) |
+| Index symbols | ~92 | **~375** |
+| VetController stub | ~450 tokens | **~1,426 tokens** |
+| Token savings | ~81% | **~90%** |
+| CI | every PR (light) | weekly / manual |
 
-Use **demo-spring** for day-to-day development. Use **PetClinic** to validate scale, richer graphs, and cross-package pruning.
+## Quick start (Docker)
 
-## Planned workflow
-
-Prefer the Docker toolchain from repo root (`docker compose`) when PetClinic automation lands.
+From repo root:
 
 ```bash
-# 1. Clone upstream (pin a tag for reproducibility)
-git clone --depth 1 --branch main https://github.com/spring-projects/spring-petclinic.git upstream
-cd upstream
-
-# 2. Index
-scip-java index
-
-# 3. Anchor-Stubborn (from anchor-stubborn repo root)
-anchor-stubborn index --scip upstream/index.scip --out examples/spring-petclinic/metadata/symbols.db
-anchor-stubborn context examples/spring-petclinic/metadata/symbols.db \
-  --target "<OwnerController or VetController stable_id>" \
-  --out examples/spring-petclinic/metadata/vet-context.stub.java
+docker compose build anchor-stubborn
+docker compose run --rm petclinic-e2e
 ```
 
-## Planned cases (./cases/)
+Clones upstream (pinned in [`upstream.pin`](upstream.pin)), runs Maven + `scip-java index --build-tool maven`, indexes SQLite, emits `VetController` context, runs verify guard.
 
-| Case | Target | Notes |
-|------|--------|-------|
-| vet-controller | `VetController` | Web → service → repository chain |
-| owner-visit-flow | `VisitController` | Multi-entity graph |
-| token-budget-stress | TBD | Measure compression vs full sources |
+Outputs (gitignored locally):
 
-## TODO
+- `metadata/symbols.db`
+- `metadata/vet-controller.stub.java`
 
-- [ ] Pin PetClinic commit SHA in this README
-- [ ] Add `scripts/run-e2e.ps1` (optional clone + index)
-- [ ] Add `cases/` entries with expected symbol neighbors
-- [ ] Document token compression baseline vs `demo-spring`
-- [ ] Optional CI job (manual / scheduled) — not on every PR
+## Host E2E (PowerShell)
 
-## Upstream
+Requires JDK 21+, Maven, scip-java, anchor-stubborn on PATH.
 
-- https://github.com/spring-projects/spring-petclinic
-- Spring Boot 3.x, Java 17+
+```powershell
+cd examples/spring-petclinic
+./scripts/run-e2e.ps1
+```
+
+Clones to `upstream/` (gitignored).
+
+## Cases
+
+| Case | Target | Doc |
+|------|--------|-----|
+| vet-controller | `VetController` | [cases/vet-controller-context.md](cases/vet-controller-context.md) |
+
+## Pin
+
+Upstream commit is pinned in [`upstream.pin`](upstream.pin). Bump intentionally after validating a new PetClinic release.
+
+## CI
+
+[`.github/workflows/petclinic-e2e.yml`](../../.github/workflows/petclinic-e2e.yml) — `workflow_dispatch` + weekly schedule (not on every PR).
+
+## Related
+
+- [demo-spring](../demo-spring/) — fast day-to-day regression
+- [docker/README.md](../../docker/README.md) — toolchain image

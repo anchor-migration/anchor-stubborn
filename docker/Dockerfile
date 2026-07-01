@@ -24,6 +24,7 @@ RUN apt-get update \
         bash \
         ca-certificates \
         curl \
+        git \
         gzip \
         maven \
         python3 \
@@ -48,6 +49,12 @@ RUN pip3 install --no-cache-dir --break-system-packages -e ".[dev]"
 
 COPY docker/run-e2e.sh /usr/local/bin/run-demo-e2e
 RUN sed -i 's/\r$//' /usr/local/bin/run-demo-e2e && chmod +x /usr/local/bin/run-demo-e2e
+
+COPY docker/run-petclinic-e2e.sh /usr/local/bin/run-petclinic-e2e
+RUN sed -i 's/\r$//' /usr/local/bin/run-petclinic-e2e && chmod +x /usr/local/bin/run-petclinic-e2e
+
+COPY examples/spring-petclinic/upstream.pin /opt/anchor-stubborn/examples/spring-petclinic/upstream.pin
+COPY scripts/resolve_symbol.py scripts/verify_petclinic_context.py /opt/anchor-stubborn/scripts/
 
 # Default CLI; compose services override entrypoint/command as needed
 ENTRYPOINT ["anchor-stubborn"]

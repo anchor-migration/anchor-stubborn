@@ -6,7 +6,7 @@ Runnable and planned end-to-end scenarios for Anchor-Stubborn.
 |---------|--------|-------------|
 | [demo-spring](demo-spring/) | **Active** | In-repo Spring Boot 3 demo — primary E2E path |
 | [fixtures](fixtures/) | Active | Minimal JSON / binary SCIP for unit tests |
-| [spring-petclinic](spring-petclinic/) | Planned | Scale-up E2E against the official PetClinic repo |
+| [spring-petclinic](spring-petclinic/) | **Active** | Scale-up E2E vs official PetClinic (~375 symbols, ~90% savings) |
 | [migration-bridge](migration-bridge/) | Active | How anchor-migration consumes Stubborn (Duke's Bank) |
 
 ## Recommended first run
@@ -16,7 +16,8 @@ Runnable and planned end-to-end scenarios for Anchor-Stubborn.
 ```bash
 # from repo root
 docker compose build
-docker compose run --rm e2e
+docker compose run --rm e2e          # demo-spring
+docker compose run --rm petclinic-e2e  # spring-petclinic scale-up
 ```
 
 **Host:**

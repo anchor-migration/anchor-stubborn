@@ -21,6 +21,7 @@ examples/**/target/
 examples/**/metadata/
 !examples/**/metadata/.gitkeep
 !examples/**/metadata/expected-context-types.txt
+!examples/**/metadata/expected-context-types-vet-controller.txt
 examples/**/upstream/
 
 # IDE

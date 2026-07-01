@@ -22,6 +22,9 @@ docker compose build
 # Run demo-spring E2E (writes artifacts to examples/demo-spring/metadata/)
 docker compose run --rm e2e
 
+# Run spring-petclinic scale-up E2E (~5 min first run; clones upstream)
+docker compose run --rm petclinic-e2e
+
 # Inspect outputs on the host
 ls examples/demo-spring/metadata/
 cat examples/demo-spring/metadata/order-service.stub.java
@@ -32,6 +35,7 @@ cat examples/demo-spring/metadata/order-service.stub.java
 | Service | Purpose |
 |---------|---------|
 | `e2e` | Runs `docker/run-e2e.sh` on mounted `examples/demo-spring` |
+| `petclinic-e2e` | Clones pinned spring-petclinic, full scale-up pipeline |
 | `shell` | Interactive bash with full toolchain |
 | `cli` | Run arbitrary `anchor-stubborn` commands |
 

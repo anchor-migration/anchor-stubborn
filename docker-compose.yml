@@ -15,6 +15,14 @@ services:
     volumes:
       - ./examples/demo-spring:/demo
 
+  petclinic-e2e:
+    image: anchor-stubborn:e2e
+    entrypoint: ["/bin/bash", "/usr/local/bin/run-petclinic-e2e"]
+    volumes:
+      - .:/opt/anchor-stubborn
+    environment:
+      PETCLINIC_ROOT: /petclinic
+
   shell:
     image: anchor-stubborn:e2e
     entrypoint: ["/bin/bash"]
