@@ -6,7 +6,7 @@ Add a new case by creating a markdown file here and (optionally) a script snippe
 | Case | Status | Target symbol | What we learn |
 |------|--------|---------------|---------------|
 | [order-service-context](order-service-context.md) | Active | `OrderService` | Service-layer pruning: repo + payment + DTOs |
-| controller-context | Planned | `OrderController` | Web layer → service dependencies |
+| [controller-context](controller-context.md) | Active | `OrderController` | Web layer → service dependencies |
 | pay-flow-context | Planned | `OrderService#payOrder` | Method-level narrow context |
 
 ## Case template

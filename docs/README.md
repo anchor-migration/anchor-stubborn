@@ -2,6 +2,7 @@
 
 | Doc | Audience | Contents |
 |-----|----------|----------|
+| [BETA.md](BETA.md) | Release owners | Java-first beta checklist and known limitations |
 | [POSITIONING.md](POSITIONING.md) | Architects | What Stubborn is / is not; Anchor family placement |
 | [INTEGRATION.md](INTEGRATION.md) | Migration teams | How migration-hub consumes Stubborn |
 | [SCIP-INGEST.md](SCIP-INGEST.md) | Index authors | Supported SCIP formats and ingest behavior |

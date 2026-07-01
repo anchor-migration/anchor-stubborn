@@ -2,6 +2,8 @@
 
 **Deterministic code context from symbol graphs — not vector search.**
 
+> **Status: Pre-beta (Java-first)** — v0.8.0a1; targeting [v0.8-beta](docs/BETA.md). API may still change before the beta tag.
+
 Anchor-Stubborn compiles a live codebase into **type-safe, privacy-preserving stub text** for LLMs and agents. It uses [SCIP](https://github.com/sourcegraph/scip) symbol indexes and dependency graphs instead of vector chunking, so context is **stubborn**: exact, reproducible, and stripped of method bodies.
 
 Part of the [Anchor](https://github.com/anchor-migration/migration-hub) family. **Not migration-only** — any live project benefits.
@@ -142,8 +144,8 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 | **0.4** | MCP server (`get_context`, `list_symbols`, `metrics`) |
 | **0.5** | Type-neighbor pruning, PR symbol-diff Action, context guard |
 | **0.6** | [spring-petclinic](examples/spring-petclinic/) scale-up E2E (~90% savings) |
-| **0.7** (now) | [Anchor-DSL](docs/ANCHOR-DSL.md) weaver (`--format anchor-dsl`) |
-| **0.8** | TBD (multi-language weavers, richer member signatures) |
+| **0.7** | [Anchor-DSL](docs/ANCHOR-DSL.md) weaver (`--format anchor-dsl`) |
+| **0.8** (pre-beta) | Java-first beta track — [BETA.md](docs/BETA.md), OrderController case |
 
 ## Documentation
 

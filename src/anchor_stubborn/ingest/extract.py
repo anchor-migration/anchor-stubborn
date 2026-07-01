@@ -67,9 +67,34 @@ def parsed_index_to_snapshot(
 
 
 def _detect_language(parsed: ParsedIndex) -> str | None:
+    from collections import Counter
+
+    languages = [
+        document.language.strip().lower()
+        for document in parsed.documents
+        if document.language and document.language.strip()
+    ]
+    if languages:
+        return Counter(languages).most_common(1)[0][0]
+
     for document in parsed.documents:
-        if document.language:
-            return document.language
+        path = (document.relative_path or "").lower()
+        if path.endswith(".java"):
+            return "java"
+        if path.endswith((".kt", ".kts")):
+            return "kotlin"
+        if path.endswith((".scala", ".sc")):
+            return "scala"
+        if path.endswith((".cs",)):
+            return "csharp"
+        if path.endswith((".ts", ".tsx")):
+            return "typescript"
+        if path.endswith((".py",)):
+            return "python"
+        if path.endswith((".go",)):
+            return "go"
+        if path.endswith((".rs",)):
+            return "rust"
     return None
 
 

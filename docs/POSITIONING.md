@@ -63,4 +63,4 @@ They complement each other. Stubborn does not replace java-ast-ssot for migratio
 
 ## Status
 
-**v0.7** — Binary SCIP ingest, type-neighbor pruning, MCP server, Docker E2E (demo-spring + spring-petclinic), Anchor-DSL weaver. See [README](../README.md) roadmap.
+**Pre-beta (v0.8.0a1, Java-first)** — feature-complete for Java/Spring E2E; one checklist item remains before the `0.8.0-beta1` tag ([BETA.md](BETA.md)). PyPI classifier stays Alpha until beta tag.

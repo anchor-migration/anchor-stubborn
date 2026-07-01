@@ -36,6 +36,17 @@ def test_parse_with_optional_magic_prefix(minimal_scip_bytes: bytes) -> None:
     assert parsed.metadata is not None
 
 
+def test_language_inferred_from_path_when_field_missing(tmp_path: Path) -> None:
+    index = build_minimal_index()
+    index.documents[0].ClearField("language")
+
+    scip_path = tmp_path / "index.scip"
+    scip_path.write_bytes(write_streaming_scip(index))
+
+    snapshot = load_scip_index(scip_path)
+    assert snapshot.language == "java"
+
+
 def test_load_binary_scip_roundtrip(tmp_path: Path, minimal_scip_bytes: bytes) -> None:
     scip_path = tmp_path / "index.scip"
     scip_path.write_bytes(minimal_scip_bytes)
