@@ -23,6 +23,22 @@ Generating or editing Java/Spring source code?
 | **Method target** | Emits target method line | `member m Type.method sig` |
 | **Type target (v0.9+)** | Target class includes method signatures | `members:` block on target type |
 
+## Granularity switches (token vs detail)
+
+Both formats share `--member-signatures` and `--javadoc` (CLI, API, MCP):
+
+| Flag | Values | Default | Effect |
+|------|--------|---------|--------|
+| `--member-signatures` | `off` \| `target` \| `neighbors` \| `all` | `target` | Which types get method lists |
+| `--javadoc` | `off` \| `summary` \| `full` | `summary` (java-stub), `off` (anchor-dsl) | Doc comments in output |
+
+| Task | Suggested flags |
+|------|-----------------|
+| Codegen on target class | `target` + `summary` |
+| Min tokens | `off` + `off` + `anchor-dsl` |
+| Understand neighbor APIs | `neighbors` or `all` |
+| Business semantics | `summary` or `full` on key types |
+
 ## Examples (demo-spring, same index)
 
 | Target | Format | ~tokens | Use when |

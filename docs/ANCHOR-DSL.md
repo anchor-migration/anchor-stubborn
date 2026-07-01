@@ -28,6 +28,10 @@ member m <Type.member> <signature>    # only when target is a method
 
 types:
   <kind> <Name> [@Annotation ...]
+  doc "<summary or tag line>"              # optional; --javadoc summary|full
+
+members:                                    # optional; --member-signatures
+  m <Type.method> <signature>
 
 edges:
   <edge-kind> <From> -> <To>
@@ -80,8 +84,13 @@ edges:
 anchor-stubborn context ./metadata/symbols.db \
   --target "…OrderService#" \
   --format anchor-dsl \
+  --member-signatures target \
+  --javadoc off \
   --out ./context/order-service.anchor-dsl
 ```
+
+`--member-signatures`: `off` | `target` | `neighbors` | `all` (default `target`).  
+`--javadoc`: `off` | `summary` | `full` (default `summary` for `java-stub`, `off` for `anchor-dsl`).
 
 ```python
 from anchor_stubborn.api import get_context

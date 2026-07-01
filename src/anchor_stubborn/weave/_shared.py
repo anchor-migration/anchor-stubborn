@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
+from anchor_stubborn.weave.options import DEFAULT_WEAVE_OPTIONS, WeaveOptions
 from anchor_stubborn.weave.types import WeaveResult
 
 if TYPE_CHECKING:
@@ -91,7 +92,10 @@ def trim_for_token_budget(
     graph: PrunedGraph,
     max_tokens: int,
     weave_fn: Callable[..., WeaveResult],
+    *,
+    options: WeaveOptions | None = None,
 ) -> tuple[list[PrunedSymbol], int]:
+    weave_options = options or DEFAULT_WEAVE_OPTIONS
     selected = list(symbols)
     dropped = 0
     target_id = graph.target_stable_id
@@ -104,6 +108,7 @@ def trim_for_token_budget(
                 edges=graph.edges,
             ),
             max_tokens=None,
+            options=weave_options,
         )
         if preview.estimated_tokens <= max_tokens:
             return selected, dropped

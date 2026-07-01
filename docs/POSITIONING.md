@@ -20,7 +20,7 @@ A **code context compiler**:
 | `java-stub` | v0.1 | Java-like declarations; best for codegen |
 | `anchor-dsl` | v0.7 | Compact type/edge graph; best for token savings |
 
-Target-type **method signatures** in both formats since v0.9. See [ANCHOR-DSL.md](ANCHOR-DSL.md), [ANCHOR-DSL-GUIDE.md](ANCHOR-DSL-GUIDE.md).
+Target-type **method signatures** in both formats since v0.9 (default `target`; use `--member-signatures neighbors|all` for more). See [ANCHOR-DSL.md](ANCHOR-DSL.md), [ANCHOR-DSL-GUIDE.md](ANCHOR-DSL-GUIDE.md).
 
 ## What it is not
 
@@ -58,7 +58,7 @@ They complement each other. Stubborn does not replace java-ast-ssot for migratio
 
 ## Privacy contract
 
-**Included:** declarations, signatures, optional Javadoc first line  
+**Included:** declarations, signatures, optional Javadoc (`--javadoc summary|full`)  
 **Excluded:** method bodies, field initializers, annotation attribute values with business data
 
 ## Status

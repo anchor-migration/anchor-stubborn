@@ -12,6 +12,7 @@ from anchor_stubborn.metrics import compute_compression
 from anchor_stubborn.store.reader import SymbolRecord, list_symbols, resolve_db_path
 from anchor_stubborn.store.writer import IndexInfo, read_info
 from anchor_stubborn.weave.dispatch import weave_context
+from anchor_stubborn.weave.options import WeaveOptions
 
 
 @dataclass(frozen=True)
@@ -45,6 +46,8 @@ def get_context(
     max_symbols: int = 200,
     call_depth: int = 2,
     max_tokens: int = 12_000,
+    member_signatures: str = "target",
+    javadoc: str | None = None,
 ) -> ContextResult:
     """Prune symbol graph and weave LLM context for a target symbol."""
     path = resolve_db_path(db_path)
@@ -53,8 +56,14 @@ def get_context(
         call_depth=call_depth,
         max_tokens=max_tokens,
     )
+    weave_options = WeaveOptions(member_signatures=member_signatures, javadoc=javadoc)
     graph = prune_context(path, target, budget=budget)
-    result = weave_context(graph, format=format, max_tokens=budget.max_tokens)
+    result = weave_context(
+        graph,
+        format=format,
+        max_tokens=budget.max_tokens,
+        options=weave_options,
+    )
     return ContextResult(
         target_stable_id=target,
         format=format,
@@ -112,6 +121,9 @@ def get_metrics(
     max_symbols: int = 200,
     call_depth: int = 2,
     max_tokens: int = 12_000,
+    format: str = "java-stub",
+    member_signatures: str = "target",
+    javadoc: str | None = None,
 ) -> dict[str, Any]:
     """Return compression KPI as a JSON-serializable dict."""
     path = resolve_db_path(db_path)
@@ -120,7 +132,15 @@ def get_metrics(
         call_depth=call_depth,
         max_tokens=max_tokens,
     )
-    report = compute_compression(path, target, sources, budget=budget)
+    weave_options = WeaveOptions(member_signatures=member_signatures, javadoc=javadoc)
+    report = compute_compression(
+        path,
+        target,
+        sources,
+        budget=budget,
+        format=format,
+        options=weave_options,
+    )
     return {
         "target_stable_id": report.target_stable_id,
         "db_path": str(path),

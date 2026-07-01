@@ -15,6 +15,7 @@ from anchor_stubborn.reconcile.diff import format_report, reconcile
 from anchor_stubborn.reconcile.entities import SymbolEntity
 from anchor_stubborn.store.writer import IndexWriter, init_db, read_info
 from anchor_stubborn.weave.dispatch import weave_context
+from anchor_stubborn.weave.options import WeaveOptions
 
 app = typer.Typer(
     name="anchor-stubborn",
@@ -88,6 +89,16 @@ def context_cmd(
         "--max-tokens",
         help="Hard cap on estimated output tokens (chars/4 heuristic)",
     ),
+    member_signatures: str = typer.Option(
+        "target",
+        "--member-signatures",
+        help="Method signatures on types: off | target | neighbors | all",
+    ),
+    javadoc: Optional[str] = typer.Option(
+        None,
+        "--javadoc",
+        help="Javadoc in output: off | summary | full (default: summary for java-stub, off for anchor-dsl)",
+    ),
     out: Optional[Path] = typer.Option(
         None,
         "--out",
@@ -104,7 +115,13 @@ def context_cmd(
     graph = prune_context(db_path, target, budget=budget)
 
     try:
-        result = weave_context(graph, format=format, max_tokens=budget.max_tokens)
+        weave_options = WeaveOptions(member_signatures=member_signatures, javadoc=javadoc)
+        result = weave_context(
+            graph,
+            format=format,
+            max_tokens=budget.max_tokens,
+            options=weave_options,
+        )
     except ValueError as exc:
         raise typer.BadParameter(str(exc)) from exc
     text = result.text
@@ -132,6 +149,16 @@ def metrics_cmd(
     max_symbols: int = typer.Option(200, "--max-symbols"),
     call_depth: int = typer.Option(2, "--call-depth"),
     max_tokens: int = typer.Option(12_000, "--max-tokens"),
+    member_signatures: str = typer.Option(
+        "target",
+        "--member-signatures",
+        help="Method signatures on types: off | target | neighbors | all",
+    ),
+    javadoc: Optional[str] = typer.Option(
+        None,
+        "--javadoc",
+        help="Javadoc in output: off | summary | full",
+    ),
     stub_out: Optional[Path] = typer.Option(
         None,
         "--stub-out",
@@ -145,7 +172,13 @@ def metrics_cmd(
         max_symbols=max_symbols,
         max_tokens=max_tokens,
     )
-    report = compute_compression(db_path, target, sources, budget=budget)
+    report = compute_compression(
+        db_path,
+        target,
+        sources,
+        budget=budget,
+        options=WeaveOptions(member_signatures=member_signatures, javadoc=javadoc),
+    )
     if stub_out:
         stub_out.write_text(report.stub.text, encoding="utf-8")
     typer.echo(report.format_summary())

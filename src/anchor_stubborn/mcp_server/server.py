@@ -38,11 +38,16 @@ def get_context(
     max_symbols: int = 200,
     call_depth: int = 2,
     max_tokens: int = 12_000,
+    member_signatures: str = "target",
+    javadoc: str | None = None,
 ) -> dict[str, Any]:
     """Return pruned, privacy-safe stub context for an LLM target symbol.
 
     format=anchor-dsl: compact graph text; each block includes a 3-line # Guide header.
     See docs/ANCHOR-DSL-LLM.txt for a system-prompt snippet.
+
+    member_signatures: off | target | neighbors | all — controls method lists on types.
+    javadoc: off | summary | full — default summary (java-stub) or off (anchor-dsl).
     """
     result = build_context(
         target,
@@ -51,6 +56,8 @@ def get_context(
         max_symbols=max_symbols,
         call_depth=call_depth,
         max_tokens=max_tokens,
+        member_signatures=member_signatures,
+        javadoc=javadoc,
     )
     return {
         "target_stable_id": result.target_stable_id,
@@ -94,6 +101,8 @@ def metrics(
     max_symbols: int = 200,
     call_depth: int = 2,
     max_tokens: int = 12_000,
+    member_signatures: str = "target",
+    javadoc: str | None = None,
     include_stub_text: bool = False,
 ) -> dict[str, Any]:
     """Compare pruned stub size against full Java sources (compression KPI)."""
@@ -104,6 +113,8 @@ def metrics(
         max_symbols=max_symbols,
         call_depth=call_depth,
         max_tokens=max_tokens,
+        member_signatures=member_signatures,
+        javadoc=javadoc,
     )
     if not include_stub_text:
         report = {k: v for k, v in report.items() if k != "stub_text"}

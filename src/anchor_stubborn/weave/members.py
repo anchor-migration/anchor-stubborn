@@ -63,11 +63,66 @@ def normalize_method_signature(symbol: PrunedSymbol) -> str:
     return text
 
 
+def resolve_target_type_id(target_stable_id: str) -> str | None:
+    if target_stable_id.endswith("#"):
+        return target_stable_id
+    if "#" in target_stable_id:
+        return target_stable_id.split("#", 1)[0] + "#"
+    return None
+
+
+def type_includes_method_signatures(
+    type_stable_id: str,
+    *,
+    target_type_id: str | None,
+    mode: str,
+    selected_type_ids: set[str],
+) -> bool:
+    if mode == "off" or not type_stable_id.endswith("#"):
+        return False
+    if type_stable_id not in selected_type_ids:
+        return False
+    if mode == "all":
+        return True
+    if mode == "target":
+        return type_stable_id == target_type_id
+    if mode == "neighbors":
+        return type_stable_id != target_type_id
+    raise ValueError(f"Unsupported member_signatures mode: {mode!r}")
+
+
+def _strip_javadoc_line(line: str) -> str:
+    return line.strip().removeprefix("/**").removeprefix("*/").removeprefix("*").removesuffix("*/").strip()
+
+
 def javadoc_first_line(documentation: str | None) -> str | None:
     if not documentation:
         return None
     for line in documentation.splitlines():
-        stripped = line.strip().removeprefix("/**").removeprefix("*").removesuffix("*/").strip()
+        stripped = _strip_javadoc_line(line)
         if stripped and not stripped.startswith("@"):
             return stripped
     return None
+
+
+def javadoc_lines(documentation: str | None, level: str) -> list[str]:
+    if level == "off" or not documentation:
+        return []
+    if level == "summary":
+        line = javadoc_first_line(documentation)
+        return [line] if line else []
+    return [stripped for line in documentation.splitlines() if (stripped := _strip_javadoc_line(line))]
+
+
+def format_java_javadoc_prefix(documentation: str | None, level: str) -> str:
+    lines = [f"// {line}" for line in javadoc_lines(documentation, level)]
+    return "\n".join(lines) + ("\n" if lines else "")
+
+
+def quote_anchor_doc(text: str) -> str:
+    escaped = text.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped}"'
+
+
+def format_anchor_dsl_doc_lines(documentation: str | None, level: str) -> list[str]:
+    return [f"  doc {quote_anchor_doc(line)}" for line in javadoc_lines(documentation, level)]

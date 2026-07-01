@@ -77,6 +77,7 @@ If the CLI is not on `PATH`, use the module entry:
 4. Agent calls `get_context` with the target stable_id before generating code
    - `format: "java-stub"` — default; Java-like declarations
    - `format: "anchor-dsl"` — compact graph; see [ANCHOR-DSL-LLM.txt](ANCHOR-DSL-LLM.txt)
+   - `member_signatures` / `javadoc` — tune detail vs tokens ([guide](ANCHOR-DSL-GUIDE.md#granularity-switches-token-vs-detail))
 5. Optional: `metrics` with `sources: src/main/java` for compression reporting
 
 ## Parameters (get_context)
@@ -89,6 +90,10 @@ If the CLI is not on `PATH`, use the module entry:
 | `max_symbols` | 200 | Graph prune cap |
 | `call_depth` | 2 | Reference closure depth |
 | `format` | `java-stub` | `java-stub` or `anchor-dsl` ([grammar](ANCHOR-DSL.md), [LLM prompt snippet](ANCHOR-DSL-LLM.txt)) |
+| `member_signatures` | `target` | `off` \| `target` \| `neighbors` \| `all` — method lists on types |
+| `javadoc` | format default | `off` \| `summary` \| `full` — doc comments (`summary` for java-stub, `off` for anchor-dsl) |
+
+`metrics` accepts the same `member_signatures` and `javadoc` parameters.
 
 ## Related
 

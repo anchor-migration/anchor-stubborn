@@ -89,6 +89,8 @@ anchor-stubborn context ./metadata/symbols.db \
 
 See [docs/ANCHOR-DSL.md](docs/ANCHOR-DSL.md) for the compact cross-language format.
 
+Tune output granularity: `--member-signatures off|target|neighbors|all`, `--javadoc off|summary|full` ([guide](docs/ANCHOR-DSL-GUIDE.md#granularity-switches-token-vs-detail)).
+
 Or use the short CLI alias: `astub`.
 
 ### 4. Reconcile before/after (CI-friendly)
@@ -147,7 +149,7 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 | **0.7** | [Anchor-DSL](docs/ANCHOR-DSL.md) weaver (`--format anchor-dsl`) |
 | **0.8** | Java-first beta track — [BETA.md](docs/BETA.md), demo-spring cases |
 | **0.9** | Method signatures, [ANCHOR-DSL-GUIDE](docs/ANCHOR-DSL-GUIDE.md) |
-| **0.9.0b1** (now) | **Java-first Beta** — classifier + tag |
+| **0.9.0b1** (now) | **Java-first Beta** — classifier + weave granularity switches |
 | **1.0** | Multi-language E2E, stable API |
 
 ## Documentation

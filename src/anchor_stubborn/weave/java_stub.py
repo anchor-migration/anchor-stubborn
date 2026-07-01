@@ -12,17 +12,26 @@ from anchor_stubborn.weave._shared import (
     trim_for_token_budget,
 )
 from anchor_stubborn.weave.members import (
-    javadoc_first_line,
+    format_java_javadoc_prefix,
     method_members_for_type,
     normalize_method_signature,
+    resolve_target_type_id,
+    type_includes_method_signatures,
 )
+from anchor_stubborn.weave.options import DEFAULT_WEAVE_OPTIONS, WeaveOptions
 from anchor_stubborn.weave.types import WeaveResult
 
 _METHOD_KINDS = frozenset({"method", "constructor", "abstractmethod", "staticmethod"})
 
 
-def weave_java_stub(graph: PrunedGraph, *, max_tokens: int | None = None) -> WeaveResult:
+def weave_java_stub(
+    graph: PrunedGraph,
+    *,
+    max_tokens: int | None = None,
+    options: WeaveOptions | None = None,
+) -> WeaveResult:
     """Render pruned symbols as compact Java-like declarations (no method bodies)."""
+    weave_options = options or DEFAULT_WEAVE_OPTIONS
     selected = select_type_symbols(graph.symbols, graph.target_stable_id)
     dropped = 0
 
@@ -32,9 +41,12 @@ def weave_java_stub(graph: PrunedGraph, *, max_tokens: int | None = None) -> Wea
             graph,
             max_tokens,
             weave_java_stub,
+            options=weave_options,
         )
 
-    target_type_id = graph.target_stable_id if graph.target_stable_id.endswith("#") else None
+    target_type_id = resolve_target_type_id(graph.target_stable_id)
+    selected_type_ids = {symbol.stable_id for symbol in selected if kind_bucket(symbol) == "type"}
+    javadoc_level = weave_options.effective_javadoc("java-stub")
 
     lines: list[str] = [
         "// Anchor-Stubborn context — declarations only, no method bodies",
@@ -46,11 +58,17 @@ def weave_java_stub(graph: PrunedGraph, *, max_tokens: int | None = None) -> Wea
     other_symbols = [s for s in selected if kind_bucket(s) != "type"]
 
     for symbol in sorted(type_symbols, key=sort_key):
-        include_members = target_type_id is not None and symbol.stable_id == target_type_id
+        include_members = type_includes_method_signatures(
+            symbol.stable_id,
+            target_type_id=target_type_id,
+            mode=weave_options.member_signatures,
+            selected_type_ids=selected_type_ids,
+        )
         header = _format_type_declaration(
             symbol,
             all_symbols=graph.symbols,
             include_method_signatures=include_members,
+            javadoc_level=javadoc_level,
         )
         if header:
             lines.append(header)
@@ -111,13 +129,13 @@ def _format_type_declaration(
     *,
     all_symbols: list[PrunedSymbol] | None = None,
     include_method_signatures: bool = False,
+    javadoc_level: str = "off",
 ) -> str | None:
     signature = (symbol.signature or symbol.display_name or _short_name(symbol.stable_id)).strip()
     if not signature or _is_annotation_only(symbol):
         return None
 
-    doc = javadoc_first_line(symbol.documentation)
-    prefix = f"// {doc}\n" if doc else ""
+    prefix = format_java_javadoc_prefix(symbol.documentation, javadoc_level)
 
     methods = (
         method_members_for_type(all_symbols or [], symbol.stable_id)
@@ -131,7 +149,7 @@ def _format_type_declaration(
             return prefix + base
         if not base.endswith("{"):
             base = f"{base} {{"
-        body_lines = [prefix + base]
+        body_lines = [prefix + base] if prefix else [base]
         for method in methods:
             body_lines.append(f"  {normalize_method_signature(method)};")
         body_lines.append("}")

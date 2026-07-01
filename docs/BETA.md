@@ -20,7 +20,7 @@ Pre-beta (`0.9.0a1`) completed the checklist; this tag flips the PyPI classifier
 - [x] SQLite symbol graph + CLI + MCP
 - [x] Type-neighbor pruning + token budget
 - [x] `java-stub` + `anchor-dsl` weavers
-- [x] Target-type method signatures (v0.9)
+- [x] Target-type method signatures (v0.9); neighbor/all + Javadoc via weave switches
 
 ### E2E validation
 
@@ -46,17 +46,18 @@ Pre-beta (`0.9.0a1`) completed the checklist; this tag flips the PyPI classifier
 |------|--------|
 | PyPI publish | Optional post-beta |
 | scip-clang / TypeScript E2E | v1.0+ |
-| Method signatures on non-target types | v1.0+ |
-| Rich Javadoc in output | v1.0+ |
+| Method signatures on non-target types | v1.0+ — use `--member-signatures neighbors|all` (beta) |
+| Rich Javadoc in output | v1.0+ — use `--javadoc full` (beta) |
 | Petclinic on every PR | Weekly (cost) |
 
 ## Known limitations (beta)
 
 1. **Java-first** — validated with scip-java.
-2. **Method signatures** — target type only; neighbors are declaration stubs.
+2. **Method signatures** — default `target` only; use `--member-signatures neighbors|all` for more.
 3. **Token estimate** — chars/4 heuristic.
-4. **Anchor-DSL** — see [ANCHOR-DSL-GUIDE.md](ANCHOR-DSL-GUIDE.md).
-5. **SCIP is the index** — Stubborn compiles pruned graphs to LLM text.
+4. **Javadoc** — default summary (java-stub) / off (anchor-dsl); `--javadoc full` for `@param` tags.
+5. **Anchor-DSL** — see [ANCHOR-DSL-GUIDE.md](ANCHOR-DSL-GUIDE.md).
+6. **SCIP is the index** — Stubborn compiles pruned graphs to LLM text.
 
 ## KPI baselines
 

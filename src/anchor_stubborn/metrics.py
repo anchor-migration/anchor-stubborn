@@ -9,6 +9,7 @@ from anchor_stubborn.config import ContextBudget
 from anchor_stubborn.graph.prune import prune_context
 from anchor_stubborn.tokens import estimate_tokens
 from anchor_stubborn.weave.dispatch import weave_context
+from anchor_stubborn.weave.options import WeaveOptions
 from anchor_stubborn.weave.types import WeaveResult
 
 
@@ -72,10 +73,16 @@ def compute_compression(
     *,
     budget: ContextBudget | None = None,
     format: str = "java-stub",
+    options: WeaveOptions | None = None,
 ) -> CompressionReport:
     budget = budget or ContextBudget()
     graph = prune_context(db_path, target_stable_id, budget=budget)
-    stub = weave_context(graph, format=format, max_tokens=budget.max_tokens)
+    stub = weave_context(
+        graph,
+        format=format,
+        max_tokens=budget.max_tokens,
+        options=options,
+    )
     source = collect_source_stats(source_root)
 
     if source.estimated_tokens == 0:

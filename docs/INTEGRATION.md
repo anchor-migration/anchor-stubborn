@@ -27,6 +27,8 @@ Feed the output to the LLM instead of raw sources. For `anchor-dsl`, paste [ANCH
 
 Or use the MCP server (`anchor-stubborn mcp`) so agents call `get_context` with `format: "java-stub"` or `"anchor-dsl"` — see [MCP.md](MCP.md).
 
+Tune weave output: `--member-signatures off|target|neighbors|all` and `--javadoc off|summary|full` on `context` / `metrics` (and MCP `get_context`).
+
 ## When migration does NOT use Stubborn
 
 - Full AST export for Explorer → **java-ast-ssot**

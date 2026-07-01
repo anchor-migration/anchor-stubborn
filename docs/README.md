@@ -22,6 +22,8 @@
 
 Both formats share the same prune step and privacy contract (declarations only, no method bodies).
 
+**Weave granularity** (CLI / API / MCP): `--member-signatures` and `--javadoc` — see [ANCHOR-DSL-GUIDE.md](ANCHOR-DSL-GUIDE.md#granularity-switches-token-vs-detail).
+
 ## Examples
 
 | Path | Description |

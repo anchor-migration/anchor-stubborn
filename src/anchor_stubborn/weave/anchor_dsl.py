@@ -16,7 +16,14 @@ from anchor_stubborn.weave._shared import (
     trim_for_token_budget,
 )
 from anchor_stubborn.weave.anchor_dsl_llm import LLM_GUIDE_LINES
-from anchor_stubborn.weave.members import method_members_for_type, normalize_method_signature
+from anchor_stubborn.weave.members import (
+    format_anchor_dsl_doc_lines,
+    method_members_for_type,
+    normalize_method_signature,
+    resolve_target_type_id,
+    type_includes_method_signatures,
+)
+from anchor_stubborn.weave.options import DEFAULT_WEAVE_OPTIONS, WeaveOptions
 from anchor_stubborn.weave.types import WeaveResult
 
 _ANCHOR_DSL_VERSION = "1.0"
@@ -37,8 +44,14 @@ _EDGE_ABBREV = {
 }
 
 
-def weave_anchor_dsl(graph: PrunedGraph, *, max_tokens: int | None = None) -> WeaveResult:
+def weave_anchor_dsl(
+    graph: PrunedGraph,
+    *,
+    max_tokens: int | None = None,
+    options: WeaveOptions | None = None,
+) -> WeaveResult:
     """Render pruned symbols as compact Anchor-DSL v1 (declarations only)."""
+    weave_options = options or DEFAULT_WEAVE_OPTIONS
     selected = select_type_symbols(graph.symbols, graph.target_stable_id)
     dropped = 0
 
@@ -48,7 +61,12 @@ def weave_anchor_dsl(graph: PrunedGraph, *, max_tokens: int | None = None) -> We
             graph,
             max_tokens,
             weave_anchor_dsl,
+            options=weave_options,
         )
+
+    target_type_id = resolve_target_type_id(graph.target_stable_id)
+    selected_type_ids = {symbol.stable_id for symbol in selected if kind_bucket(symbol) == "type"}
+    javadoc_level = weave_options.effective_javadoc("anchor-dsl")
 
     target_label = short_target_name(graph.target_stable_id)
     lines: list[str] = [
@@ -77,18 +95,27 @@ def weave_anchor_dsl(graph: PrunedGraph, *, max_tokens: int | None = None) -> We
             type_line = _format_type_line(symbol)
             if type_line:
                 lines.append(f"  {type_line}")
+            lines.extend(format_anchor_dsl_doc_lines(symbol.documentation, javadoc_level))
         lines.append("")
 
-    target_type_id = graph.target_stable_id if graph.target_stable_id.endswith("#") else None
-    if target_type_id:
-        type_methods = method_members_for_type(graph.symbols, target_type_id)
-        if type_methods:
-            lines.append("members:")
-            for method in type_methods:
-                label = short_target_name(method.stable_id)
-                sig = normalize_method_signature(method)
-                lines.append(f"  m {label} {sig}")
-            lines.append("")
+    member_lines: list[str] = []
+    for symbol in sorted(type_symbols, key=sort_key):
+        if not type_includes_method_signatures(
+            symbol.stable_id,
+            target_type_id=target_type_id,
+            mode=weave_options.member_signatures,
+            selected_type_ids=selected_type_ids,
+        ):
+            continue
+        for method in method_members_for_type(graph.symbols, symbol.stable_id):
+            label = short_target_name(method.stable_id)
+            sig = normalize_method_signature(method)
+            member_lines.append(f"  m {label} {sig}")
+
+    if member_lines:
+        lines.append("members:")
+        lines.extend(member_lines)
+        lines.append("")
 
     stable_ids = {s.stable_id for s in selected}
     if target_symbol is not None and _is_method_like(target_symbol):
