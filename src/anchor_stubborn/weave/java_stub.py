@@ -11,6 +11,11 @@ from anchor_stubborn.weave._shared import (
     sort_key,
     trim_for_token_budget,
 )
+from anchor_stubborn.weave.members import (
+    javadoc_first_line,
+    method_members_for_type,
+    normalize_method_signature,
+)
 from anchor_stubborn.weave.types import WeaveResult
 
 _METHOD_KINDS = frozenset({"method", "constructor", "abstractmethod", "staticmethod"})
@@ -29,6 +34,8 @@ def weave_java_stub(graph: PrunedGraph, *, max_tokens: int | None = None) -> Wea
             weave_java_stub,
         )
 
+    target_type_id = graph.target_stable_id if graph.target_stable_id.endswith("#") else None
+
     lines: list[str] = [
         "// Anchor-Stubborn context — declarations only, no method bodies",
         f"// target: {_short_name(graph.target_stable_id)}",
@@ -39,7 +46,12 @@ def weave_java_stub(graph: PrunedGraph, *, max_tokens: int | None = None) -> Wea
     other_symbols = [s for s in selected if kind_bucket(s) != "type"]
 
     for symbol in sorted(type_symbols, key=sort_key):
-        header = _format_type_declaration(symbol)
+        include_members = target_type_id is not None and symbol.stable_id == target_type_id
+        header = _format_type_declaration(
+            symbol,
+            all_symbols=graph.symbols,
+            include_method_signatures=include_members,
+        )
         if header:
             lines.append(header)
             lines.append("")
@@ -94,15 +106,42 @@ def _is_annotation_only(symbol: PrunedSymbol) -> bool:
     )
 
 
-def _format_type_declaration(symbol: PrunedSymbol) -> str | None:
+def _format_type_declaration(
+    symbol: PrunedSymbol,
+    *,
+    all_symbols: list[PrunedSymbol] | None = None,
+    include_method_signatures: bool = False,
+) -> str | None:
     signature = (symbol.signature or symbol.display_name or _short_name(symbol.stable_id)).strip()
     if not signature or _is_annotation_only(symbol):
         return None
+
+    doc = javadoc_first_line(symbol.documentation)
+    prefix = f"// {doc}\n" if doc else ""
+
+    methods = (
+        method_members_for_type(all_symbols or [], symbol.stable_id)
+        if include_method_signatures and all_symbols
+        else []
+    )
+
+    if methods:
+        base = signature.replace(" { /* stub */ }", "").rstrip()
+        if base.endswith("}"):
+            return prefix + base
+        if not base.endswith("{"):
+            base = f"{base} {{"
+        body_lines = [prefix + base]
+        for method in methods:
+            body_lines.append(f"  {normalize_method_signature(method)};")
+        body_lines.append("}")
+        return "\n".join(body_lines)
+
     if "{ /* stub */ }" in signature:
-        return signature
+        return prefix + signature
     if signature.endswith("}"):
-        return signature
-    return f"{signature} {{ /* stub */ }}"
+        return prefix + signature
+    return prefix + f"{signature} {{ /* stub */ }}"
 
 
 def _format_member_declaration(symbol: PrunedSymbol) -> str | None:

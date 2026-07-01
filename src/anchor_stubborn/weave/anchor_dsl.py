@@ -16,6 +16,7 @@ from anchor_stubborn.weave._shared import (
     trim_for_token_budget,
 )
 from anchor_stubborn.weave.anchor_dsl_llm import LLM_GUIDE_LINES
+from anchor_stubborn.weave.members import method_members_for_type, normalize_method_signature
 from anchor_stubborn.weave.types import WeaveResult
 
 _ANCHOR_DSL_VERSION = "1.0"
@@ -77,6 +78,17 @@ def weave_anchor_dsl(graph: PrunedGraph, *, max_tokens: int | None = None) -> We
             if type_line:
                 lines.append(f"  {type_line}")
         lines.append("")
+
+    target_type_id = graph.target_stable_id if graph.target_stable_id.endswith("#") else None
+    if target_type_id:
+        type_methods = method_members_for_type(graph.symbols, target_type_id)
+        if type_methods:
+            lines.append("members:")
+            for method in type_methods:
+                label = short_target_name(method.stable_id)
+                sig = normalize_method_signature(method)
+                lines.append(f"  m {label} {sig}")
+            lines.append("")
 
     stable_ids = {s.stable_id for s in selected}
     if target_symbol is not None and _is_method_like(target_symbol):

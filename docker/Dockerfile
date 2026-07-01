@@ -56,6 +56,7 @@ RUN sed -i 's/\r$//' /usr/local/bin/run-petclinic-e2e && chmod +x /usr/local/bin
 COPY examples/spring-petclinic/upstream.pin /opt/anchor-stubborn/examples/spring-petclinic/upstream.pin
 COPY scripts/resolve_symbol.py scripts/verify_petclinic_context.py \
     scripts/verify_demo_context.py scripts/verify_controller_context.py \
+    scripts/verify_pay_flow_context.py \
     /opt/anchor-stubborn/scripts/
 
 # Default CLI; compose services override entrypoint/command as needed

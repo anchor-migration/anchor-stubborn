@@ -1,5 +1,7 @@
 # Documentation index
 
+**Package version:** `0.9.0a1` (pre-beta) — see [BETA.md](BETA.md) for `0.9.0b1` tag criteria.
+
 | Doc | Audience | Contents |
 |-----|----------|----------|
 | [BETA.md](BETA.md) | Release owners | Java-first beta checklist and known limitations |
@@ -7,6 +9,7 @@
 | [INTEGRATION.md](INTEGRATION.md) | Migration teams | How migration-hub consumes Stubborn |
 | [SCIP-INGEST.md](SCIP-INGEST.md) | Index authors | Supported SCIP formats and ingest behavior |
 | [MCP.md](MCP.md) | Agent / Cursor users | MCP tools, config, workflows |
+| [ANCHOR-DSL-GUIDE.md](ANCHOR-DSL-GUIDE.md) | Prompt authors | When to use java-stub vs anchor-dsl |
 | [ANCHOR-DSL.md](ANCHOR-DSL.md) | LLM context authors | Anchor-DSL v1 grammar and CLI usage |
 | [ANCHOR-DSL-LLM.txt](ANCHOR-DSL-LLM.txt) | Prompt engineers | Short system-prompt snippet for `format=anchor-dsl` |
 

@@ -13,14 +13,14 @@ A **code context compiler**:
 3. **Weave** — Emit declaration context (no method bodies)
 4. **Reconcile** — Diff symbol sets for CI / migration guardrails
 
-## Output formats (v0.7)
+## Output formats
 
-| Format | Description |
-|--------|-------------|
-| `java-stub` | Java-like declarations; best for codegen |
-| `anchor-dsl` | Compact type/edge graph; best for token savings and cross-language agents |
+| Format | Since | Description |
+|--------|-------|-------------|
+| `java-stub` | v0.1 | Java-like declarations; best for codegen |
+| `anchor-dsl` | v0.7 | Compact type/edge graph; best for token savings |
 
-Both use the same prune step. See [ANCHOR-DSL.md](ANCHOR-DSL.md) and [ANCHOR-DSL-LLM.txt](ANCHOR-DSL-LLM.txt).
+Target-type **method signatures** in both formats since **v0.9** (`0.9.0a1` pre-beta). See [ANCHOR-DSL.md](ANCHOR-DSL.md), [ANCHOR-DSL-GUIDE.md](ANCHOR-DSL-GUIDE.md).
 
 ## What it is not
 
@@ -63,4 +63,4 @@ They complement each other. Stubborn does not replace java-ast-ssot for migratio
 
 ## Status
 
-**Pre-beta (v0.8.0a1, Java-first)** — feature-complete for Java/Spring E2E; one checklist item remains before the `0.8.0-beta1` tag ([BETA.md](BETA.md)). PyPI classifier stays Alpha until beta tag.
+**Pre-beta `0.9.0a1` (Java-first)** — formal beta at **`0.9.0b1`** ([BETA.md](BETA.md)).

@@ -23,6 +23,7 @@ examples/**/metadata/
 !examples/**/metadata/expected-context-types.txt
 !examples/**/metadata/expected-context-types-vet-controller.txt
 !examples/**/metadata/expected-context-types-controller.txt
+!examples/**/metadata/expected-context-types-pay-order.txt
 examples/**/upstream/
 
 # IDE

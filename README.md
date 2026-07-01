@@ -2,7 +2,7 @@
 
 **Deterministic code context from symbol graphs — not vector search.**
 
-> **Status: Pre-beta (Java-first)** — v0.8.0a1; targeting [v0.8-beta](docs/BETA.md). API may still change before the beta tag.
+> **Status: Pre-beta (Java-first)** — release **`0.9.0a1`** · formal beta → `0.9.0b1` ([BETA.md](docs/BETA.md))
 
 Anchor-Stubborn compiles a live codebase into **type-safe, privacy-preserving stub text** for LLMs and agents. It uses [SCIP](https://github.com/sourcegraph/scip) symbol indexes and dependency graphs instead of vector chunking, so context is **stubborn**: exact, reproducible, and stripped of method bodies.
 
@@ -145,7 +145,9 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 | **0.5** | Type-neighbor pruning, PR symbol-diff Action, context guard |
 | **0.6** | [spring-petclinic](examples/spring-petclinic/) scale-up E2E (~90% savings) |
 | **0.7** | [Anchor-DSL](docs/ANCHOR-DSL.md) weaver (`--format anchor-dsl`) |
-| **0.8** (pre-beta) | Java-first beta track — [BETA.md](docs/BETA.md), OrderController case |
+| **0.8** | Java-first beta track — [BETA.md](docs/BETA.md), demo-spring cases |
+| **0.9** (pre-beta, **now**) | Method signatures on target types; [ANCHOR-DSL-GUIDE](docs/ANCHOR-DSL-GUIDE.md) · ship **`0.9.0a1`** |
+| **next** | Tag **`0.9.0b1`** when beta checklist complete |
 
 ## Documentation
 
@@ -153,6 +155,7 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 |-----|-------------|
 | [docs/README.md](docs/README.md) | Documentation index |
 | [docs/ANCHOR-DSL.md](docs/ANCHOR-DSL.md) | Anchor-DSL grammar |
+| [docs/ANCHOR-DSL-GUIDE.md](docs/ANCHOR-DSL-GUIDE.md) | java-stub vs anchor-dsl decision guide |
 | [docs/ANCHOR-DSL-LLM.txt](docs/ANCHOR-DSL-LLM.txt) | LLM system-prompt snippet |
 | [docs/MCP.md](docs/MCP.md) | Cursor / agent integration |
 | [docs/SCIP-INGEST.md](docs/SCIP-INGEST.md) | SCIP ingest |

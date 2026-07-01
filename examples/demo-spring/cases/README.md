@@ -7,7 +7,7 @@ Add a new case by creating a markdown file here and (optionally) a script snippe
 |------|--------|---------------|---------------|
 | [order-service-context](order-service-context.md) | Active | `OrderService` | Service-layer pruning: repo + payment + DTOs |
 | [controller-context](controller-context.md) | Active | `OrderController` | Web layer → service dependencies |
-| pay-flow-context | Planned | `OrderService#payOrder` | Method-level narrow context |
+| [pay-flow-context](pay-flow-context.md) | Active | `OrderService#payOrder` | Method-level narrow context |
 
 ## Case template
 
