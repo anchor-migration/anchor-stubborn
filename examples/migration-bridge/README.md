@@ -6,6 +6,8 @@ How [anchor-migration](https://github.com/anchor-migration/migration-hub) can co
 
 Migrating `AccountControllerBean` (EJB session) → Spring `@Service`. The LLM needs surrounding types but not full method bodies.
 
+**Formal runbook:** [examples/dukesbank](../dukesbank/) (E2E scripts, case docs, Docker `dukesbank-e2e`). This folder is the minimal consumer sketch.
+
 ## Steps
 
 ```bash

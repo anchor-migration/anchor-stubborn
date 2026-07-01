@@ -25,6 +25,9 @@ docker compose run --rm e2e
 # Run spring-petclinic scale-up E2E (~5 min first run; clones upstream)
 docker compose run --rm petclinic-e2e
 
+# Duke's Bank Step 7 (requires sibling dukesbank clone at ../../dukesbank)
+docker compose run --rm dukesbank-e2e
+
 # Inspect outputs on the host
 ls examples/demo-spring/metadata/
 cat examples/demo-spring/metadata/order-service.stub.java

@@ -7,7 +7,8 @@ End-to-end scenarios for Anchor-Stubborn.
 | [demo-spring](demo-spring/) | **Active** | In-repo Spring Boot 3 demo — primary E2E path |
 | [fixtures](fixtures/) | Active | Minimal JSON / binary SCIP for unit tests |
 | [spring-petclinic](spring-petclinic/) | **Active** | Scale-up E2E vs official PetClinic (~375 symbols, ~90% savings) |
-| [migration-bridge](migration-bridge/) | Active | How anchor-migration consumes Stubborn (Duke's Bank) |
+| [dukesbank](dukesbank/) | **Active** | Duke's Bank Step 7 — external clone + E2E |
+| [migration-bridge](migration-bridge/) | Active | Minimal anchor-migration consumer sketch |
 
 ## Output formats
 
@@ -25,6 +26,7 @@ Both examples support:
 docker compose build
 docker compose run --rm e2e              # demo-spring
 docker compose run --rm petclinic-e2e    # spring-petclinic scale-up
+docker compose run --rm dukesbank-e2e    # Duke's Bank (sibling dukesbank clone)
 ```
 
 **Host:**

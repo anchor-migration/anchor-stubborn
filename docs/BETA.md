@@ -26,6 +26,7 @@ Pre-beta (`0.9.0a1`) completed the checklist; this tag flips the PyPI classifier
 
 - [x] demo-spring Docker E2E (OrderService, OrderController, payOrder)
 - [x] spring-petclinic scale-up E2E
+- [x] Duke's Bank `AccountControllerBean` case (Step 7 runbook)
 - [x] CI symbols.db artifact — neighbor tests without skip
 
 ### Agent / docs
@@ -67,6 +68,7 @@ Pre-beta (`0.9.0a1`) completed the checklist; this tag flips the PyPI classifier
 | demo-spring `OrderController` | web | ~84% |
 | demo-spring `OrderService#payOrder` | method | ~80% |
 | spring-petclinic `VetController` | scale-up | ~90% |
+| dukesbank `AccountControllerBean` | migration | ≥70% (Step 7) |
 
 ## Related
 

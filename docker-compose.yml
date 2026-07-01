@@ -23,6 +23,16 @@ services:
     environment:
       PETCLINIC_ROOT: /petclinic
 
+  dukesbank-e2e:
+    image: anchor-stubborn:e2e
+    entrypoint: ["/bin/bash", "/usr/local/bin/run-dukesbank-e2e"]
+    volumes:
+      - .:/opt/anchor-stubborn
+      - ../../dukesbank/src/j2eetutorial14/examples/bank:/bank:ro
+    environment:
+      BANK_ROOT: /bank
+      EXAMPLE_ROOT: /opt/anchor-stubborn/examples/dukesbank
+
   shell:
     image: anchor-stubborn:e2e
     entrypoint: ["/bin/bash"]
