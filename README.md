@@ -1,3 +1,6 @@
+> **⚠️ This repository has been archived.**  
+> Active development continues at **[stubborn-ai/stubborn](https://github.com/stubborn-ai/stubborn)**.
+
 # Anchor-Stubborn
 
 **Deterministic code context from symbol graphs — not vector search.**
