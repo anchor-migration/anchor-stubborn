@@ -113,7 +113,7 @@ Tools: `get_context`, `list_symbols`, `metrics`. See [docs/MCP.md](docs/MCP.md) 
 | `init-db` | Create empty SQLite symbol graph |
 | `index` | Ingest SCIP (`.scip`, `.scip.ndjson`, or `.json` fixture) |
 | `info` | Index run summary |
-| `context` | Prune graph → emit stub text for LLM |
+| `context` | Prune graph → emit LLM context (`--format java-stub` \| `anchor-dsl`) |
 | `metrics` | Compression KPI: stub vs full Java sources |
 | `mcp` | Run MCP server (stdio) for agents |
 | `diff` | Symbol set reconcile (missing/extra) |
@@ -125,7 +125,7 @@ Tools: `get_context`, `list_symbols`, `metrics`. See [docs/MCP.md](docs/MCP.md) 
        ↓
   anchor-stubborn index → SQLite symbol graph
        ↓
-  anchor-stubborn context → Java stub text (no method bodies)
+  anchor-stubborn context → stub text (java-stub or anchor-dsl)
        ↓
   LLM / Agent / CI
 ```
@@ -143,6 +143,18 @@ SQLite schema: [`src/anchor_stubborn/store/schema/v1.sql`](src/anchor_stubborn/s
 | **0.5** | Type-neighbor pruning, PR symbol-diff Action, context guard |
 | **0.6** | [spring-petclinic](examples/spring-petclinic/) scale-up E2E (~90% savings) |
 | **0.7** (now) | [Anchor-DSL](docs/ANCHOR-DSL.md) weaver (`--format anchor-dsl`) |
+| **0.8** | TBD (multi-language weavers, richer member signatures) |
+
+## Documentation
+
+| Doc | Description |
+|-----|-------------|
+| [docs/README.md](docs/README.md) | Documentation index |
+| [docs/ANCHOR-DSL.md](docs/ANCHOR-DSL.md) | Anchor-DSL grammar |
+| [docs/ANCHOR-DSL-LLM.txt](docs/ANCHOR-DSL-LLM.txt) | LLM system-prompt snippet |
+| [docs/MCP.md](docs/MCP.md) | Cursor / agent integration |
+| [docs/SCIP-INGEST.md](docs/SCIP-INGEST.md) | SCIP ingest |
+| [examples/README.md](examples/README.md) | E2E examples |
 
 ## Related projects
 

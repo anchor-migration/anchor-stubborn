@@ -21,6 +21,12 @@ anchor-stubborn index --scip index.scip --out metadata/symbols.db
 anchor-stubborn context metadata/symbols.db \
   --target "semanticdb maven com/example/MyService#" \
   --out my-service.stub.java
+
+# Compact graph format (v0.7+)
+anchor-stubborn context metadata/symbols.db \
+  --target "semanticdb maven com/example/MyService#" \
+  --format anchor-dsl \
+  --out my-service.anchor-dsl
 ```
 
 ## What gets extracted

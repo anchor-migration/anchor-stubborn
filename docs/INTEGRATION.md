@@ -11,22 +11,28 @@ Before asking an LLM to propose rewrite mappings or recipe changes:
 # 2. Index
 anchor-stubborn index --scip index.scip --out metadata/code-context.db
 
-# 3. Context for a migration target class
+# 3. Context for a migration target class (Java stub — familiar to codegen models)
 anchor-stubborn context metadata/code-context.db \
   --target "semanticdb maven com/sun/ebank/ejb/account/AccountControllerBean#" \
   --out /tmp/account-controller.stub.java
+
+# Or compact graph format (fewer tokens)
+anchor-stubborn context metadata/code-context.db \
+  --target "semanticdb maven com/sun/ebank/ejb/account/AccountControllerBean#" \
+  --format anchor-dsl \
+  --out /tmp/account-controller.anchor-dsl
 ```
 
-Feed `/tmp/account-controller.stub.java` to the LLM instead of raw sources.
+Feed the output to the LLM instead of raw sources. For `anchor-dsl`, paste [ANCHOR-DSL-LLM.txt](ANCHOR-DSL-LLM.txt) into the system prompt (or rely on the embedded `# Guide` header).
 
-Or use the MCP server (`anchor-stubborn mcp`) so agents call `get_context` directly — see [MCP.md](MCP.md).
+Or use the MCP server (`anchor-stubborn mcp`) so agents call `get_context` with `format: "java-stub"` or `"anchor-dsl"` — see [MCP.md](MCP.md).
 
 ## When migration does NOT use Stubborn
 
 - Full AST export for Explorer → **java-ast-ssot**
 - Schema ↔ code crosswalk → **java-ast-ssot crosswalk** + **db-metadata**
 - Applying rewrites → **rewrite-recipes** + OpenRewrite
-- Parity testing → **parity-verify** (planned)
+- Parity testing → **parity-verify** (separate program tooling)
 
 ## Pipeline diagram (consumer view)
 
@@ -34,7 +40,7 @@ Or use the MCP server (`anchor-stubborn mcp`) so agents call `get_context` direc
                     ┌─────────────────────┐
                     │   anchor-stubborn   │
                     └──────────┬──────────┘
-                               │ stub context text
+                               │ stub / anchor-dsl text
      ┌─────────────────────────┼─────────────────────────┐
      ▼                         ▼                         ▼
  LLM mapping draft      rewrite-recipes design      PR diff CI
@@ -42,12 +48,28 @@ Or use the MCP server (`anchor-stubborn mcp`) so agents call `get_context` direc
 
 Stubborn is **not** drawn inside migration-hub Layers 1–4. It sits above them as shared infrastructure.
 
-## Future: migration-hub ADR
+## Program contract
 
-Program integration is documented in [migration-hub ADR-010](https://github.com/anchor-migration/migration-hub/blob/main/docs/ADR-010-anchor-stubborn-integration.md). This file remains repo-local workflow detail.
+Integration is documented in [migration-hub ADR-010](https://github.com/anchor-migration/migration-hub/blob/main/docs/ADR-010-anchor-stubborn-integration.md). This file remains repo-local workflow detail.
+
+## CI hooks (shipped)
+
+| Workflow | Purpose |
+|----------|---------|
+| `anchor-stubborn diff` | Symbol reconcile between two indexes |
+| [pr-symbol-diff.yml](../.github/workflows/pr-symbol-diff.yml) | PR guard for symbol regressions |
+| [petclinic-e2e.yml](../.github/workflows/petclinic-e2e.yml) | Weekly / manual scale-up E2E |
+
+Example:
+
+```yaml
+- run: anchor-stubborn diff metadata/before.db metadata/after.db
+```
+
+Fails if symbols are missing (exit code 1).
 
 ## Weak coupling rules
 
 1. **No compile-time dependency** from Stubborn → rewrite-recipes or java-ast-ssot
 2. **Shared conventions only**: stable IDs, SQLite snapshot pattern, reconcile vocabulary
-3. **Optional** in any migration runbook — teams can use java-ast-ssot alone until Stubborn matures
+3. **Optional** in any migration runbook — teams can use java-ast-ssot alone when full AST is required

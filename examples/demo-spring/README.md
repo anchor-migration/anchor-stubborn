@@ -58,7 +58,18 @@ Outputs:
 
 - `index.scip` — SCIP index from scip-java
 - `metadata/symbols.db` — Anchor-Stubborn SQLite graph
-- `metadata/order-service.stub.java` — pruned LLM context for `OrderService`
+- `metadata/order-service.stub.java` — pruned LLM context for `OrderService` (`java-stub`)
+
+Optional compact format:
+
+```bash
+anchor-stubborn context metadata/symbols.db \
+  --target "<OrderService stable_id>" \
+  --format anchor-dsl \
+  --out metadata/order-service.anchor-dsl
+```
+
+See [docs/ANCHOR-DSL.md](../../docs/ANCHOR-DSL.md).
 
 ## Manual steps
 
@@ -123,6 +134,6 @@ See [`cases/README.md`](cases/README.md) for the case catalog pattern. New scena
 
 | Example | Role |
 |---------|------|
-| [spring-petclinic](../spring-petclinic/) | Planned scale-up against the official PetClinic repo |
+| [spring-petclinic](../spring-petclinic/) | Scale-up E2E vs official PetClinic (~375 symbols, ~90% savings) |
 | [migration-bridge](../migration-bridge/) | Legacy migration integration (Duke's Bank) |
 | [fixtures](../fixtures/) | Minimal SCIP files for unit tests |

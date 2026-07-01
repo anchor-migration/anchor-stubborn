@@ -10,8 +10,17 @@ A **code context compiler**:
 
 1. **Ingest** — SCIP symbol index → SQLite dependency graph
 2. **Prune** — BFS from a target symbol with token/graph budgets
-3. **Weave** — Emit declaration stubs (no method bodies)
+3. **Weave** — Emit declaration context (no method bodies)
 4. **Reconcile** — Diff symbol sets for CI / migration guardrails
+
+## Output formats (v0.7)
+
+| Format | Description |
+|--------|-------------|
+| `java-stub` | Java-like declarations; best for codegen |
+| `anchor-dsl` | Compact type/edge graph; best for token savings and cross-language agents |
+
+Both use the same prune step. See [ANCHOR-DSL.md](ANCHOR-DSL.md) and [ANCHOR-DSL-LLM.txt](ANCHOR-DSL-LLM.txt).
 
 ## What it is not
 
@@ -19,6 +28,7 @@ A **code context compiler**:
 - Not a multi-language parser (use scip-java, scip-clang, etc.)
 - Not an AST rewrite engine (that's OpenRewrite / java-ast-ssot)
 - Not migration-only
+- Not a replacement for SCIP (SCIP is the machine index; Stubborn is the LLM-facing compiler output)
 
 ## Anchor family placement
 
@@ -41,7 +51,7 @@ anchor-migration org
 | Question answered | "What's in this project?" | "What does the AI need right now?" |
 | Parser | JavaParser | SCIP (industry standard) |
 | Languages | Java | Java first; SCIP-multi-language path |
-| Output | Full AST SQLite | Pruned stub **text** |
+| Output | Full AST SQLite | Pruned stub **text** (`java-stub` or `anchor-dsl`) |
 | Token awareness | No | Core KPI |
 
 They complement each other. Stubborn does not replace java-ast-ssot for migration crosswalk or Explorer.
@@ -53,4 +63,4 @@ They complement each other. Stubborn does not replace java-ast-ssot for migratio
 
 ## Status
 
-Alpha (v0.3). Binary SCIP ingest supports scip-java `index.scip` output. MCP server shipped in v0.4.
+**v0.7** — Binary SCIP ingest, type-neighbor pruning, MCP server, Docker E2E (demo-spring + spring-petclinic), Anchor-DSL weaver. See [README](../README.md) roadmap.

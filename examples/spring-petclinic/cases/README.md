@@ -1,4 +1,4 @@
-# Planned E2E cases for spring-petclinic scale-up.
+# E2E cases for spring-petclinic scale-up.
 
 | Case | Status | Doc |
 |------|--------|-----|

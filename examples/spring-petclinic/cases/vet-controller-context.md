@@ -14,6 +14,12 @@ docker compose run --rm petclinic-e2e
 anchor-stubborn context examples/spring-petclinic/metadata/symbols.db \
   --target "<VetController stable_id>" \
   --out examples/spring-petclinic/metadata/vet-controller.stub.java
+
+# Optional: anchor-dsl
+anchor-stubborn context examples/spring-petclinic/metadata/symbols.db \
+  --target "<VetController stable_id>" \
+  --format anchor-dsl \
+  --out examples/spring-petclinic/metadata/vet-controller.anchor-dsl
 ```
 
 ## Expected neighbors

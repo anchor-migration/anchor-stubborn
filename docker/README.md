@@ -28,7 +28,13 @@ docker compose run --rm petclinic-e2e
 # Inspect outputs on the host
 ls examples/demo-spring/metadata/
 cat examples/demo-spring/metadata/order-service.stub.java
+
+# Anchor-DSL (after indexing):
+docker compose run --rm cli context /demo/metadata/symbols.db \
+  --target "<stable_id>" --format anchor-dsl
 ```
+
+See [docs/ANCHOR-DSL.md](../docs/ANCHOR-DSL.md).
 
 ## Services
 
@@ -78,4 +84,5 @@ docker compose build --build-arg SCIP_JAVA_VERSION=0.12.3
 ## Related
 
 - [examples/demo-spring/README.md](../examples/demo-spring/README.md) — demo app and cases
+- [examples/spring-petclinic/README.md](../examples/spring-petclinic/README.md) — scale-up E2E
 - [docs/SCIP-INGEST.md](../docs/SCIP-INGEST.md) — SCIP ingest details

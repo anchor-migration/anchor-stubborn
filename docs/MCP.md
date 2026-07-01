@@ -1,4 +1,4 @@
-# MCP server (v0.4)
+# MCP server
 
 Anchor-Stubborn exposes three MCP tools over **stdio** for Cursor, Claude Desktop, and other MCP clients.
 
@@ -14,7 +14,7 @@ pip install -e ".[dev]"
 
 | Tool | Purpose |
 |------|---------|
-| `get_context` | Prune symbol graph → Java stub text for a `target` stable_id |
+| `get_context` | Prune symbol graph → LLM context (`format`: `java-stub` or `anchor-dsl`) |
 | `list_symbols` | Browse/search indexed symbols to pick a target |
 | `metrics` | Compression KPI: stub vs full Java `sources` tree |
 
@@ -75,6 +75,8 @@ If the CLI is not on `PATH`, use the module entry:
 2. Configure MCP with `ANCHOR_STUBBORN_DB` pointing at that file
 3. Agent calls `list_symbols` with `query: "OrderService"` to find `stable_id`
 4. Agent calls `get_context` with the target stable_id before generating code
+   - `format: "java-stub"` — default; Java-like declarations
+   - `format: "anchor-dsl"` — compact graph; see [ANCHOR-DSL-LLM.txt](ANCHOR-DSL-LLM.txt)
 5. Optional: `metrics` with `sources: src/main/java` for compression reporting
 
 ## Parameters (get_context)
@@ -90,5 +92,6 @@ If the CLI is not on `PATH`, use the module entry:
 
 ## Related
 
+- [ANCHOR-DSL.md](ANCHOR-DSL.md) — compact output format
 - [INTEGRATION.md](INTEGRATION.md) — how migration programs consume Stubborn
 - [migration-hub ADR-010](https://github.com/anchor-migration/migration-hub/blob/main/docs/ADR-010-anchor-stubborn-integration.md)

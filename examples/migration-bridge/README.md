@@ -16,13 +16,21 @@ scip-java index
 # Index into Stubborn SQLite
 anchor-stubborn index --scip index.scip --out metadata/context.db
 
-# Emit privacy-safe context
+# Emit privacy-safe context (Java stub)
 anchor-stubborn context metadata/context.db \
   --target "semanticdb maven com/sun/ebank/ejb/account/AccountControllerBean#" \
   --out account-controller.stub.java
+
+# Or compact graph format
+anchor-stubborn context metadata/context.db \
+  --target "semanticdb maven com/sun/ebank/ejb/account/AccountControllerBean#" \
+  --format anchor-dsl \
+  --out account-controller.anchor-dsl
 ```
 
-Paste `account-controller.stub.java` into your agent prompt instead of entire source trees.
+Paste the output into your agent prompt instead of entire source trees. For `anchor-dsl`, see [docs/ANCHOR-DSL-LLM.txt](../../docs/ANCHOR-DSL-LLM.txt).
+
+Or use MCP: `get_context` with the same `target` and optional `format`.
 
 ## What stays in migration repos
 
@@ -34,12 +42,12 @@ Paste `account-controller.stub.java` into your agent prompt instead of entire so
 | **LLM context only** | **anchor-stubborn** |
 | Apply rewrites | rewrite-recipes |
 
-## CI hook (planned v0.3)
+## CI hook
+
+Symbol reconcile after refactors:
 
 ```yaml
-- run: anchor-stubborn diff metadata/before.db metadata/after.db --in-scope scope.txt
+- run: anchor-stubborn diff metadata/before.db metadata/after.db
 ```
 
-Fails the PR if in-scope symbols disappear after migration.
-
-See [docs/INTEGRATION.md](../../docs/INTEGRATION.md).
+See [pr-symbol-diff.yml](../../.github/workflows/pr-symbol-diff.yml) and [docs/INTEGRATION.md](../../docs/INTEGRATION.md).
